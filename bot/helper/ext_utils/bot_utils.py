@@ -177,7 +177,7 @@ def get_readable_message():
                 up_speed += float(spd.split('M')[0]) * 1048576
     bmsg = f"<b>📊 Performance Meter 📊</b>\n\n<b>🖥 CPU            : {cpu_percent()}%</b>\n<b>🗃 DISK           : {get_readable_file_size(disk_usage(DOWNLOAD_DIR).free)}</b>"
     bmsg += f"\n<b>⚙️ RAM           : {virtual_memory().percent}%</b>\n<b>🖥 UPTIME     : {get_readable_time(time() - botStartTime)}</b>"
-    bmsg += f"\n\n<b>⚡️ Internet Speed Meter ⚡️</b>\n\n<b>📉D : {get_readable_file_size(dl_speed)}/s</b> | <b>📈U : {get_readable_file_size(up_speed)}/s</b> "
+    bmsg += f"\n\n<b>⚡️ Internet Speed Meter ⚡️</b>\n\n<b>📉 Download : {get_readable_file_size(dl_speed)}/s</b> | <b>📈 Upload : {get_readable_file_size(up_speed)}/s</b> "
     if STATUS_LIMIT and tasks > STATUS_LIMIT:
         msg += f"<b>Page : {PAGE_NO}/{PAGES}</b> | <b>Tasks : {tasks}</b>\n"
         buttons = ButtonMaker()
