@@ -51,7 +51,7 @@ async def _ytdl(client, message, isZip=False, isLeech=False, sameDir={}):
     folder_name = ''
 
     args = mssg.split(maxsplit=3)
-    if len(args) > 1:
+    if len(args) > 0:
         for x in args:
             x = x.strip()
             if x in ['|', 'pswd:', 'opt:']:
