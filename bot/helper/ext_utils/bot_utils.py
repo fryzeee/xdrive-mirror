@@ -134,7 +134,8 @@ def get_readable_message():
             msg += f"\n🚀 <b>{get_progress_bar_string(download)} {download.progress()}</b>"
             msg += f"\n<b>🔥 Running : {get_readable_file_size(download.processed_bytes())} of {download.size()}</b> "
             msg += f"\n<b>⚡️ Speed : {download.speed()}</b>" \
-                           f"\n<b>⏳ ETA : {download.eta()}</b>"
+                           f"\n<b>⏳ ETA : {download.eta()}</b>" \
+                           f"\n<b>🔰 GID : {download.gid()}</b>"
             if hasattr(download, 'seeders_num'):
                 try:
                     msg += f"\n<b>🔍 Tracker :- 🧲 Seeds : {download.seeders_num()}</b> | <b>🧲 Leechs : {download.leechers_num()}</b> "
@@ -147,7 +148,6 @@ def get_readable_message():
             msg += f"\n<b>🔀 Ratio : {download.ratio()}</b>"
             msg += f" | <b>⏳ Time : {download.seeding_time()}</b>"
         else:
-            msg += f"\n<b>🔰 GID : {download.gid()}</b>"
         msg += f"\n<b>🚫 Cancel :</b> <code>/{BotCommands.CancelMirror} {download.gid()}</code>"
         msg += "\n\n"
         if index == STATUS_LIMIT:
