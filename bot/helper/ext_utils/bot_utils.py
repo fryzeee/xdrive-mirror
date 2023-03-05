@@ -134,7 +134,7 @@ def get_readable_message():
             msg += f"\n🚀 <b>{get_progress_bar_string(download)} {download.progress()}</b>"
             msg += f"\n<b>🔥 Running : {get_readable_file_size(download.processed_bytes())} of {download.size()}</b> "
             msg += f"\n<b>⚡️ Speed : {download.speed()}</b>" \
-                           f"\n<b>⏳ ETA : {download.eta()}</b>\n<b>🔰 GID : {download.gid()}</b>"
+                           f"\n<b>⏳ ETA : {download.eta()}</b>\n<b>🔰 Your GID : {download.gid()}</b>"
             if hasattr(download, 'seeders_num'):
                 try:
                     msg += f"\n<b>🔍 Tracker :- 🧲 Seeds : {download.seeders_num()}</b> | <b>🧲 Leechs : {download.leechers_num()}</b> "
@@ -147,7 +147,7 @@ def get_readable_message():
             msg += f"\n<b>🔀 Ratio : {download.ratio()}</b>"
             msg += f" | <b>⏳ Time : {download.seeding_time()}</b>"
         else:
-            msg += f"\n<b>🔰 GID : {download.gid()}</b>"
+            msg += f"\n<b>🔰 Your GID : {download.gid()}</b>"
         msg += f"\n<b>🚫 Cancel :</b> <code>/{BotCommands.CancelMirror} {download.gid()}</code>"
         msg += "\n\n"
         if index == STATUS_LIMIT:
@@ -177,9 +177,9 @@ def get_readable_message():
                 up_speed += float(spd.split('M')[0]) * 1048576
     bmsg = f"<b>📊 Performance Meter 📊</b>\n\n<b>🖥 CPU            : {cpu_percent()}%</b>\n<b>🗃 DISK           : {get_readable_file_size(disk_usage(DOWNLOAD_DIR).free)}</b>"
     bmsg += f"\n<b>⚙️ RAM           : {virtual_memory().percent}%</b>\n<b>🖥 UPTIME     : {get_readable_time(time() - botStartTime)}</b>"
-    bmsg += f"\n\n<b>⚡️ Internet Speed Meter ⚡️</b>\n\n<b>🔺 Upload         : {get_readable_file_size(up_speed)}/s</b>\n<b>🔻 Download    : {get_readable_file_size(dl_speed)}/s</b>"
+    bmsg += f"\n\n<b>⚡️ Internet Speed Meter ⚡️</b>\n\n<b>🔺 Upload       : {get_readable_file_size(up_speed)}/s</b>\n<b>🔻 Download  : {get_readable_file_size(dl_speed)}/s</b>"
     if STATUS_LIMIT and tasks > STATUS_LIMIT:
-        msg += f"<b>Page : {PAGE_NO}/{PAGES}</b> | <b>Tasks : {tasks}</b>\n"
+        msg += f"<b>📑 Page : {PAGE_NO}/{PAGES}</b> | <b>🗒 Tasks : {tasks}</b>\n"
         buttons = ButtonMaker()
         buttons.ibutton("⬅️", "status pre")
         buttons.ibutton("➡️", "status nex")
