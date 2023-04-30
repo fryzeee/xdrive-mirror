@@ -47,23 +47,26 @@ async def stats(client, message):
         last_commit = last_commit[0]
     else:
         last_commit = 'No UPSTREAM_REPO'
-    stats = f'<b>Commit Date</b>: {last_commit}\n\n'\
-            f'<b>Bot Uptime</b>: {get_readable_time(time() - botStartTime)}\n'\
-            f'<b>OS Uptime</b>: {get_readable_time(time() - boot_time())}\n\n'\
-            f'<b>Total Disk Space </b>: {get_readable_file_size(total)}\n'\
-            f'<b>Used</b>: {get_readable_file_size(used)} | <b>Free</b>: {get_readable_file_size(free)}\n\n'\
-            f'<b>Upload</b>: {get_readable_file_size(net_io.bytes_sent)}\n'\
-            f'<b>Download</b>: {get_readable_file_size(net_io.bytes_recv)}\n\n'\
-            f'<b>CPU</b>: {cpu_percent(interval=0.5)}%\n'\
-            f'<b>RAM</b>: {memory.percent}%\n'\
-            f'<b>DISK</b>: {disk}%\n\n'\
-            f'<b>Physical Cores</b>: {cpu_count(logical=False)}\n'\
-            f'<b>Total Cores</b>: {cpu_count(logical=True)}\n\n'\
-            f'<b>SWAP</b>: {get_readable_file_size(swap.total)} | <b>Used</b>: {swap.percent}%\n'\
-            f'<b>Memory Total</b>: {get_readable_file_size(memory.total)}\n'\
-            f'<b>Memory Free</b>: {get_readable_file_size(memory.available)}\n'\
-            f'<b>Memory Used</b>: {get_readable_file_size(memory.used)}\n'
+    stats = f'<b>📊 Time Calculation 📊</b>\n\n'\
+            f'<b>⏰ Bot Uptime : {get_readable_time(time() - botStartTime)}</b>\n'\
+            f'<b>🖥 OS Uptime : {get_readable_time(time() - boot_time())}</b>\n\n'\
+			f'<b>📊 Data Usage  📊</b>\n\n'\
+            f'<b>🗃 Storage : {get_readable_file_size(total)}</b>\n'\
+            f'<b>📈 Used : {get_readable_file_size(used)}</b> | <b>📉 Free : {get_readable_file_size(free)}</b>\n'\
+            f'<b>📤 Upload : {get_readable_file_size(net_io_counters().bytes_sent)}</b>\n'\
+            f'<b>📥 Download : {get_readable_file_size(net_io_counters().bytes_recv)}</b>\n\n'\
+			f'<b>📊 Performance Meter 📊</b>\n\n'\
+            f'<b>🖥 CPU : {cpu_percent(interval=0.5)}%</b>\n'\
+            f'<b>⚙️ RAM : {memory.percent}%</b>\n'\
+            f'<b>🗃 DISK : {disk}%</b>\n'\
+            f'<b>🪅 Physical Cores : {cpu_count(logical=False)}</b>\n'\
+            f'<b>🎛 Total Cores : {cpu_count(logical=True)}</b>\n'\
+            f'<b>🛡 Swap Memory : {get_readable_file_size(swap.total)}</b> | <b>⏳ Used : {swap.percent}%</b>\n'\
+            f'<b>💽 Memory Total : {get_readable_file_size(memory.total)}</b>\n'\
+            f'<b>📉 Memory Free : {get_readable_file_size(memory.available)}</b>\n'\
+            f'<b>📈 Memory Used : {get_readable_file_size(memory.used)}</b>\n'
     await sendMessage(message, stats)
+
 
 
 async def start(client, message):
