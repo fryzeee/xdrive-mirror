@@ -419,7 +419,7 @@ class MirrorLeechListener:
                 msg += f'\n<b>📄 Total Files : {files}</b>'
             msg += f"\n<b>⏳ Finished : {get_readable_time(time() - self.extra_details['startTime'])}</b>"
             msg += f"\n<b>✅ Status :- Successfully {self.extra_details['mode']}</b>"
-            msg += f"\n\n<b>👤 By : {self.tag}"   
+            msg += f"\n\n<b>👤 By : {self.tag}</b>"   
             if link or rclonePath and config_dict['RCLONE_SERVE_URL']:
                 if drive_id and config_dict['GDRIVE_ID'] != drive_id:
                     msg += f"\n\n<b>Folder id</b>: <code>{drive_id}</code>"
@@ -502,7 +502,7 @@ class MirrorLeechListener:
             count = len(download_dict)
             if self.uid in self.sameDir:
                 self.sameDir.remove(self.uid)
-        msg = f"Hi! {self.tag} Download: {escape(error)}"
+        msg = f"Hi! {self.tag} {escape(error)}"
         await sendMessage(self.message, msg, button)
         if self.logMessage:
             await sendMessage(self.logMessage, msg, button)
