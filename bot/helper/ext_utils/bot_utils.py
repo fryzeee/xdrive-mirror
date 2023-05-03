@@ -195,7 +195,6 @@ def get_readable_message():
     msg += f"\n\n<b>⚡️ Internet Speed Meter ⚡️</b>"
     msg += f"\n<b>🔻 Download : {get_readable_file_size(dl_speed)}/s</b>\n<b>🔺 Upload : {get_readable_file_size(up_speed)}/s</b>"
     return msg, button
-return msg + button, None
 
 
 async def turn_page(data):
