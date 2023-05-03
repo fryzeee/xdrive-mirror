@@ -134,29 +134,31 @@ def get_readable_message():
         globals()['STATUS_START'] = STATUS_LIMIT * (PAGES - 1)
         globals()['PAGE_NO'] = PAGES
     for download in list(download_dict.values())[STATUS_START:STATUS_LIMIT+STATUS_START]:
-        msg += f"<b>{download.status()}</b>: <code>{escape(f'{download.name()}')}</code>"
+        msg += f"<b>📄 File Name :</b> <code>{escape(f'{download.name()}')}</code>"
+        msg += f"\n<b>🗃️ Total Size : {download.size()}</b>"
+        msg += f"\n<b>🌀 Status : {download.status()}</b>"
         if download.status() not in [MirrorStatus.STATUS_SPLITTING, MirrorStatus.STATUS_SEEDING]:
-            msg += f"\n{get_progress_bar_string(download.progress())} {download.progress()}"
-            msg += f"\n<b>Processed</b>: {download.processed_bytes()} of {download.size()}"
-            msg += f"\n<b>Speed</b>: {download.speed()} | <b>ETA</b>: {download.eta()}"
+            msg += f"\n<b>🚀 Finish : {get_progress_bar_string(download.progress())} {download.progress()}</b>"
+            msg += f"\n<b>🔥 Running : {download.processed_bytes()} of {download.size()}"
+            msg += f"\n<b>⚡️ Speed : {download.speed()}\n<b>⏳ Estimated :</b>: {download.eta()}"
             if hasattr(download, 'seeders_num'):
                 try:
-                    msg += f"\n<b>Seeders</b>: {download.seeders_num()} | <b>Leechers</b>: {download.leechers_num()}"
+                    msg += f"\n<b>🔍 Tracker :- 🧲 Seeds : {download.seeders_num()}</b> | <b>🧲 Leechs : {download.leechers_num()}</b> "
                 except:
                     pass
         elif download.status() == MirrorStatus.STATUS_SEEDING:
-            msg += f"\n<b>Size</b>: {download.size()}"
-            msg += f"\n<b>Speed</b>: {download.upload_speed()}"
-            msg += f" | <b>Uploaded</b>: {download.uploaded_bytes()}"
-            msg += f"\n<b>Ratio</b>: {download.ratio()}"
-            msg += f" | <b>Time</b>: {download.seeding_time()}"
+            msg += f"\n<b>🗃️ Total Size : {download.size()}</b>"
+            msg += f"\n<b>⚡️ Speed : {download.upload_speed()}</b>"
+            msg += f" | <b>📤 Upload : {download.uploaded_bytes()}</b>"
+            msg += f"\n<b>🔀 Ratio : {download.ratio()}</b>"
+            msg += f" | <b>⏳ Time : {download.seeding_time()}</b>"
         else:
-            msg += f"\n<b>Size</b>: {download.size()}"
-        msg += f"\n<b>Source</b>: {download.extra_details['source']}"
-        msg += f"\n<b>Elapsed</b>: {get_readable_time(time() - download.extra_details['startTime'])}"
-        msg += f"\n<b>Engine</b>: {download.engine}"
-        msg += f"\n<b>Upload</b>: {download.extra_details['mode']}"
-        msg += f"\n<b>Stop</b>: <code>/{BotCommands.CancelMirror} {download.gid()}</code>\n\n"
+            msg += f"\n<b>🗃️ Total Size : {download.size()}</b>"
+        msg += f"\n<b>💡 Source : {download.extra_details['source']}</b>"
+        msg += f"\n<b>⏳ Elapsed : {get_readable_time(time() - download.extra_details['startTime'])}</b>"
+        msg += f"\n<b>🐍 Module : {download.engine}</b>"
+        msg += f"\n<b>📍 Type Upload : {download.extra_details['mode']}</b>"
+        msg += f"\n<b>🚫 Stop : <code>/{BotCommands.CancelMirror} {download.gid()}</code></b>\n\n"
     if len(msg) == 0:
         return None, None
     dl_speed = 0
@@ -187,9 +189,9 @@ def get_readable_message():
         buttons.ibutton(f"{PAGE_NO}/{PAGES} ({tasks})", "status ref")
         buttons.ibutton(">>", "status nex")
         button = buttons.build_menu(3)
-    msg += f"<b>CPU</b>: {cpu_percent()}% | <b>FREE</b>: {get_readable_file_size(disk_usage(config_dict['DOWNLOAD_DIR']).free)}"
-    msg += f"\n<b>RAM</b>: {virtual_memory().percent}% | <b>UPTIME</b>: {get_readable_time(time() - botStartTime)}"
-    msg += f"\n<b>DL</b>: {get_readable_file_size(dl_speed)}/s | <b>UL</b>: {get_readable_file_size(up_speed)}/s"
+    msg = f"<b>📊 Performance Meter 📊</b>\n\n<b>🖥 CPU            : {cpu_percent()}%</b>\n<b>🗃 DISK           : {get_readable_file_size(disk_usage(config_dict['DOWNLOAD_DIR']).free)}</b>"
+    msg += f"\n<b>⚙️ RAM           : {virtual_memory().percent}%</b>\n<b>🖥 UPTIME     : {get_readable_time(time() - botStartTime)}</b>"
+    msg += f"\n\n<b>⚡️ Internet Speed Meter ⚡️</b>\n\n<b>🔺 Upload       : {get_readable_file_size(up_speed)}/s</b>\n<b>🔻 Download  : {get_readable_file_size(dl_speed)}/s</b>"
     return msg, button
 
 
