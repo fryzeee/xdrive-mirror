@@ -33,17 +33,17 @@ PAGE_NO = 1
 
 
 class MirrorStatus:
-    STATUS_UPLOADING = "Upload"
-    STATUS_DOWNLOADING = "Download"
-    STATUS_CLONING = "Clone"
-    STATUS_QUEUEDL = "QueueDl"
-    STATUS_QUEUEUP = "QueueUp"
-    STATUS_PAUSED = "Pause"
-    STATUS_ARCHIVING = "Archive"
-    STATUS_EXTRACTING = "Extract"
-    STATUS_SPLITTING = "Split"
-    STATUS_CHECKING = "CheckUp"
-    STATUS_SEEDING = "Seed"
+    STATUS_UPLOADING = "Uploading. . . 📤"
+    STATUS_DOWNLOADING = "Downloading. . . 📥"
+    STATUS_CLONING = "Cloning. . . ♻️"
+    STATUS_QUEUEDL = "Queued Download. . . 📝"
+    STATUS_QUEUEUP = "Queued Upload. . . 📝"
+    STATUS_PAUSED = "Paused. . . ⭕️"
+    STATUS_ARCHIVING = "Archiving. . . 🔐"
+    STATUS_EXTRACTING = "Extracting. . . 📂"
+    STATUS_SPLITTING = "Split. . . ✂️ "
+    STATUS_CHECKING = "Checking. . . 🔎"
+    STATUS_SEEDING = "Seeding. . . 🌧"
 
 
 class setInterval:
@@ -94,14 +94,14 @@ def bt_selection_buttons(id_, isCanCncl=True):
     buttons = ButtonMaker()
     BASE_URL = config_dict['BASE_URL']
     if config_dict['WEB_PINCODE']:
-        buttons.ubutton("Select Files", f"{BASE_URL}/app/files/{id_}")
-        buttons.ibutton("Pincode", f"btsel pin {gid} {pincode}")
+        buttons.ubutton("👆 Select Files 👆", f"{BASE_URL}/app/files/{id_}")
+        buttons.ibutton("🔰 Pin Code 🔰", f"btsel pin {gid} {pincode}")
     else:
         buttons.ubutton(
-            "Select Files", f"{BASE_URL}/app/files/{id_}?pin_code={pincode}")
+            "👆 Select Files 👆", f"{BASE_URL}/app/files/{id_}?pin_code={pincode}")
     if isCanCncl:
-        buttons.ibutton("Cancel", f"btsel rm {gid} {id_}")
-    buttons.ibutton("Done Selecting", f"btsel done {gid} {id_}")
+        buttons.ibutton("🚫 Cancel 🚫", f"btsel rm {gid} {id_}")
+    buttons.ibutton("✅ Done Selecting ✅", f"btsel done {gid} {id_}")
     return buttons.build_menu(2)
 
 
@@ -184,9 +184,9 @@ def get_readable_message():
                 up_speed += float(spd.split('M')[0]) * 1048576
     if tasks > STATUS_LIMIT:
         buttons = ButtonMaker()
-        buttons.ibutton("<<", "status pre")
+        buttons.ibutton("⬅️", "status pre")
         buttons.ibutton(f"{PAGE_NO}/{PAGES} ({tasks})", "status ref")
-        buttons.ibutton(">>", "status nex")
+        buttons.ibutton("➡️", "status nex")
         button = buttons.build_menu(3)
     msg += f"<b>📊 Performance Meter 📊</b>\n\n"
     msg += f"<b><b>🖥 CPU            : {cpu_percent()}%\n</b>🗃 DISK           : {get_readable_file_size(disk_usage(config_dict['DOWNLOAD_DIR']).free)}</b>"
@@ -217,7 +217,7 @@ async def turn_page(data):
 
 
 def get_readable_time(seconds):
-    periods = [('d', 86400), ('h', 3600), ('m', 60), ('s', 1)]
+    periods = [(' Days ', 86400), (' Hours ', 3600), (' Minutes ', 60), (' Seconds ', 1)]
     result = ''
     for period_name, period_seconds in periods:
         if seconds >= period_seconds:
