@@ -140,7 +140,7 @@ def get_readable_message():
         if download.status() not in [MirrorStatus.STATUS_SPLITTING, MirrorStatus.STATUS_SEEDING]:
             msg += f"\n<b>🚀 Finish : {get_progress_bar_string(download.progress())} {download.progress()}</b>"
             msg += f"\n<b>🔥 Running : {download.processed_bytes()} of {download.size()}"
-            msg += f"\n<b>⚡️ Speed : {download.speed()}\n<b>⏳ Estimated :</b>: {download.eta()}"
+            msg += f"\n<b>⚡️ Speed : {download.speed()}\n<b>⏳ Estimated : {download.eta()}</b>"
             if hasattr(download, 'seeders_num'):
                 try:
                     msg += f"\n<b>🔍 Tracker :- 🧲 Seeds : {download.seeders_num()}</b> | <b>🧲 Leechs : {download.leechers_num()}</b> "
