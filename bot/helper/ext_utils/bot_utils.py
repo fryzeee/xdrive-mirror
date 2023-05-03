@@ -185,7 +185,7 @@ def get_readable_message():
         buttons.ibutton(f"{PAGE_NO}/{PAGES} ({tasks})", "status ref")
         buttons.ibutton(">>", "status nex")
         button = buttons.build_menu(3)
-    msg = f"<b>📊 Performance Meter 📊</b>\n\n<b>🖥 CPU            : {cpu_percent()}%</b>\n<b>🗃 DISK           : {get_readable_file_size(disk_usage(DOWNLOAD_DIR).free)}</b>"
+    msg = f"<b>📊 Performance Meter 📊</b>\n\n<b>🖥 CPU            : {cpu_percent()}%</b>\n<b>🗃 DISK           : {get_readable_file_size(disk_usage(config_dict['DOWNLOAD_DIR']).free)}</b>"
     msg += f"\n<b>⚙️ RAM           : {virtual_memory().percent}%</b>\n<b>🖥 UPTIME     : {get_readable_time(time() - botStartTime)}</b>"
     msg += f"\n\n<b>⚡️ Internet Speed Meter ⚡️</b>\n\n<b>🔺 Upload       : {get_readable_file_size(up_speed)}/s</b>\n<b>🔻 Download  : {get_readable_file_size(dl_speed)}/s</b>"
     return msg, button
