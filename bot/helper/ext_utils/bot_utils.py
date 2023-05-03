@@ -31,18 +31,20 @@ STATUS_START = 0
 PAGES = 1
 PAGE_NO = 1
 
+
 class MirrorStatus:
-    STATUS_UPLOADING = "Uploading. . . 📤"
-    STATUS_DOWNLOADING = "Downloading. . . 📥"
-    STATUS_CLONING = "Cloning. . . ♻️"
-    STATUS_QUEUEDL = "Queued Download. . . 📝"
-    STATUS_QUEUEUP = "Queued Upload. . . 📝"
-    STATUS_PAUSED = "Paused. . . ⭕️"
-    STATUS_ARCHIVING = "Archiving. . . 🔐"
-    STATUS_EXTRACTING = "Extracting. . . 📂"
-    STATUS_SPLITTING = "Split. . . ✂️ "
-    STATUS_CHECKING = "Checking. . . 🔎"
-    STATUS_SEEDING = "Seeding. . . 🌧"
+    STATUS_UPLOADING = "Upload"
+    STATUS_DOWNLOADING = "Download"
+    STATUS_CLONING = "Clone"
+    STATUS_QUEUEDL = "QueueDl"
+    STATUS_QUEUEUP = "QueueUp"
+    STATUS_PAUSED = "Pause"
+    STATUS_ARCHIVING = "Archive"
+    STATUS_EXTRACTING = "Extract"
+    STATUS_SPLITTING = "Split"
+    STATUS_CHECKING = "CheckUp"
+    STATUS_SEEDING = "Seed"
+
 
 class setInterval:
     def __init__(self, interval, action):
@@ -92,23 +94,23 @@ def bt_selection_buttons(id_, isCanCncl=True):
     buttons = ButtonMaker()
     BASE_URL = config_dict['BASE_URL']
     if config_dict['WEB_PINCODE']:
-        buttons.ubutton("👆 Select Files 👆", f"{BASE_URL}/app/files/{id_}")
-        buttons.ibutton("🔰 Pin Code 🔰", f"btsel pin {gid} {pincode}")
+        buttons.ubutton("Select Files", f"{BASE_URL}/app/files/{id_}")
+        buttons.ibutton("Pincode", f"btsel pin {gid} {pincode}")
     else:
         buttons.ubutton(
-            "👆 Select Files 👆", f"{BASE_URL}/app/files/{id_}?pin_code={pincode}")
+            "Select Files", f"{BASE_URL}/app/files/{id_}?pin_code={pincode}")
     if isCanCncl:
-        buttons.ibutton("🚫 Cancel 🚫", f"btsel rm {gid} {id_}")
-    buttons.ibutton("✅ Done Selecting ✅", f"btsel done {gid} {id_}")
+        buttons.ibutton("Cancel", f"btsel rm {gid} {id_}")
+    buttons.ibutton("Done Selecting", f"btsel done {gid} {id_}")
     return buttons.build_menu(2)
 
 
 async def get_telegraph_list(telegraph_content):
-    path = [(await telegraph.create_page(title='xDrive Search', content=content))["path"] for content in telegraph_content]
+    path = [(await telegraph.create_page(title='Jmdkh-mltb Drive Search', content=content))["path"] for content in telegraph_content]
     if len(path) > 1:
         await telegraph.edit_telegraph(path, telegraph_content)
     buttons = ButtonMaker()
-    buttons.ubutton("🔎 Check 🔍", f"https://telegra.ph/{path[0]}", 'header')
+    buttons.ubutton("🔎 VIEW", f"https://telegra.ph/{path[0]}", 'header')
     buttons = extra_btns(buttons)
     return buttons.build_menu(1)
 
@@ -132,32 +134,29 @@ def get_readable_message():
         globals()['STATUS_START'] = STATUS_LIMIT * (PAGES - 1)
         globals()['PAGE_NO'] = PAGES
     for download in list(download_dict.values())[STATUS_START:STATUS_LIMIT+STATUS_START]:
-            msg += f"<b>📄 File Name : <code>{escape(str(download.name()))}</code>"
-            msg += f"\n<b>🗃️ Total Size : {download.size()}</b>"
-            msg += f"\n<b>🌀 Status : {download.status()}</b>"
+        msg += f"<b>{download.status()}</b>: <code>{escape(f'{download.name()}')}</code>"
         if download.status() not in [MirrorStatus.STATUS_SPLITTING, MirrorStatus.STATUS_SEEDING]:
-            msg += f"\n🚀 <b>{get_progress_bar_string(download)} {download.progress()}</b>"
-            msg += f"\n<b>🔥 Running : {get_readable_file_size(download.processed_bytes())} of {download.size()}</b> "
-            msg += f"\n<b>⚡️ Speed : {download.speed()}</b>" \
-                           f"\n<b>⏳ ETA : {download.eta()}</b>\n<b>🔰 Your GID : {download.gid()}</b>"
+            msg += f"\n{get_progress_bar_string(download.progress())} {download.progress()}"
+            msg += f"\n<b>Processed</b>: {download.processed_bytes()} of {download.size()}"
+            msg += f"\n<b>Speed</b>: {download.speed()} | <b>ETA</b>: {download.eta()}"
             if hasattr(download, 'seeders_num'):
                 try:
-                    msg += f"\n<b>🔍 Tracker :- 🧲 Seeds : {download.seeders_num()}</b> | <b>🧲 Leechs : {download.leechers_num()}</b>"
+                    msg += f"\n<b>Seeders</b>: {download.seeders_num()} | <b>Leechers</b>: {download.leechers_num()}"
                 except:
                     pass
         elif download.status() == MirrorStatus.STATUS_SEEDING:
-            msg += f"\n<b>🗃️ Total Size : {download.size()}</b>"
-            msg += f"\n<b>⚡️ Speed : {download.upload_speed()}</b>"
-            msg += f" | <b>📤 Uploaded : {download.uploaded_bytes()}</b>"
-            msg += f"\n<b>🔀 Ratio : {download.ratio()}</b>"
-            msg += f" | <b>⏳ Time : {download.seeding_time()}</b>"
+            msg += f"\n<b>Size</b>: {download.size()}"
+            msg += f"\n<b>Speed</b>: {download.upload_speed()}"
+            msg += f" | <b>Uploaded</b>: {download.uploaded_bytes()}"
+            msg += f"\n<b>Ratio</b>: {download.ratio()}"
+            msg += f" | <b>Time</b>: {download.seeding_time()}"
         else:
-            msg += f"\n<b>🗃️ Total Size : {download.size()}</b>"
-        msg += f"\n<b>⚒ Source : {download.extra_details['source']}</b>"
-        msg += f"\n<b>⏳ Elapsed : {get_readable_time(time() - download.extra_details['startTime'])}</b>"
-        msg += f"\n<b>🐍 Module : {download.engine}</b>"
-        msg += f"\n<b>📍 Type Upload : {download.extra_details['mode']}</b>"
-        msg += f"\n<b>🚫 Stop :</b> <code>/{BotCommands.CancelMirror} {download.gid()}</code>\n\n"
+            msg += f"\n<b>Size</b>: {download.size()}"
+        msg += f"\n<b>Source</b>: {download.extra_details['source']}"
+        msg += f"\n<b>Elapsed</b>: {get_readable_time(time() - download.extra_details['startTime'])}"
+        msg += f"\n<b>Engine</b>: {download.engine}"
+        msg += f"\n<b>Upload</b>: {download.extra_details['mode']}"
+        msg += f"\n<b>Stop</b>: <code>/{BotCommands.CancelMirror} {download.gid()}</code>\n\n"
     if len(msg) == 0:
         return None, None
     dl_speed = 0
@@ -188,9 +187,9 @@ def get_readable_message():
         buttons.ibutton(f"{PAGE_NO}/{PAGES} ({tasks})", "status ref")
         buttons.ibutton(">>", "status nex")
         button = buttons.build_menu(3)
-    msg = f"<b>📊 Performance Meter 📊</b>\n\n<b>🖥 CPU            : {cpu_percent()}%</b>\n<b>🗃 DISK           : {get_readable_file_size(disk_usage(DOWNLOAD_DIR).free)}</b>"
-    msg += f"\n<b>⚙️ RAM           : {virtual_memory().percent}%</b>\n<b>🖥 UPTIME     : {get_readable_time(time() - botStartTime)}</b>"
-    msg += f"\n\n<b>⚡️ Internet Speed Meter ⚡️</b>\n\n<b>🔺 Upload       : {get_readable_file_size(up_speed)}/s</b>\n<b>🔻 Download  : {get_readable_file_size(dl_speed)}/s</b>"
+    msg += f"<b>CPU</b>: {cpu_percent()}% | <b>FREE</b>: {get_readable_file_size(disk_usage(config_dict['DOWNLOAD_DIR']).free)}"
+    msg += f"\n<b>RAM</b>: {virtual_memory().percent}% | <b>UPTIME</b>: {get_readable_time(time() - botStartTime)}"
+    msg += f"\n<b>DL</b>: {get_readable_file_size(dl_speed)}/s | <b>UL</b>: {get_readable_file_size(up_speed)}/s"
     return msg, button
 
 
@@ -215,7 +214,7 @@ async def turn_page(data):
 
 
 def get_readable_time(seconds):
-    periods = [(' Days ', 86400), (' Hours ', 3600), (' Minutes ', 60), (' Second ', 1)]
+    periods = [('d', 86400), ('h', 3600), ('m', 60), ('s', 1)]
     result = ''
     for period_name, period_seconds in periods:
         if seconds >= period_seconds:
