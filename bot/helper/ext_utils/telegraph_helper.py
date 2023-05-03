@@ -72,7 +72,7 @@ class TelegraphHelper:
                     nxt_page += 1
             await self.edit_page(
                 path=path[prev_page],
-                title='Jmdkh-mltb Torrent Search',
+                title='xDrive Torrent Search',
                 content=content
             )
         return
@@ -87,5 +87,5 @@ class TelegraphHelper:
 
 
 telegraph = TelegraphHelper(
-    'Jmdkh-mltb', 'https://github.com/junedkh/jmdkh-mltb')
+    'xDrive', 'https://t.me/xdrive_bot')
 bot_loop.run_until_complete(telegraph.create_account())
