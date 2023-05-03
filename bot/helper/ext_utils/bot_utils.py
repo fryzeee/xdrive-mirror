@@ -138,9 +138,9 @@ def get_readable_message():
         msg += f"\n<b>🗃️ Total Size : {download.size()}</b>"
         msg += f"\n<b>🌀 Status : {download.status()}</b>"
         if download.status() not in [MirrorStatus.STATUS_SPLITTING, MirrorStatus.STATUS_SEEDING]:
-            msg += f"\n<b>🚀 Finish : {get_progress_bar_string(download.progress())} {download.progress()}</b>"
-            msg += f"\n<b>🔥 Running : {download.processed_bytes()} of {download.size()}"
-            msg += f"\n<b>⚡️ Speed : {download.speed()}\n<b>⏳ Estimated : {download.eta()}</b>"
+            msg += f"\n<b>🚀 {get_progress_bar_string(download.progress())} {download.progress()} 🚀</b>"
+            msg += f"\n<b>🔥 Running : {download.processed_bytes()} of {download.size()}</b>"
+            msg += f"\n<b>⚡️ Speed : {download.speed()}\n</b>⏳ Estimated : {download.eta()}</b>"
             if hasattr(download, 'seeders_num'):
                 try:
                     msg += f"\n<b>🔍 Tracker :- 🧲 Seeds : {download.seeders_num()}</b> | <b>🧲 Leechs : {download.leechers_num()}</b> "
@@ -154,7 +154,6 @@ def get_readable_message():
             msg += f" | <b>⏳ Time : {download.seeding_time()}</b>"
         else:
             msg += f"\n<b>🗃️ Total Size : {download.size()}</b>"
-        msg += f"\n<b>💡 Source : {download.extra_details['source']}</b>"
         msg += f"\n<b>⏳ Elapsed : {get_readable_time(time() - download.extra_details['startTime'])}</b>"
         msg += f"\n<b>🐍 Module : {download.engine}</b>"
         msg += f"\n<b>📍 Type Upload : {download.extra_details['mode']}</b>"
@@ -192,8 +191,8 @@ def get_readable_message():
     msg += f"<b>📊 Performance Meter 📊</b>\n\n"
     msg += f"<b><b>🖥 CPU            : {cpu_percent()}%\n</b>🗃 DISK           : {get_readable_file_size(disk_usage(config_dict['DOWNLOAD_DIR']).free)}</b>"
     msg += f"\n<b>⚙️ RAM           : {virtual_memory().percent}%</b>\n<b>🖥 UPTIME     : {get_readable_time(time() - botStartTime)}</b>"
-    msg += f"\n\n<b>⚡️ Internet Speed Meter ⚡️</b>"
-    msg += f"\n<b>🔻 Download : {get_readable_file_size(dl_speed)}/s</b>\n<b>🔺 Upload : {get_readable_file_size(up_speed)}/s</b>"
+    msg += f"\n\n<b>⚡️ Internet Speed Meter ⚡️</b>\n\n"
+    msg += f"\n<b>🔻 Download  : {get_readable_file_size(dl_speed)}/s</b>\n<b>🔺 Upload       : {get_readable_file_size(up_speed)}/s</b>"
     return msg, button
 
 
