@@ -106,11 +106,11 @@ def bt_selection_buttons(id_, isCanCncl=True):
 
 
 async def get_telegraph_list(telegraph_content):
-    path = [(await telegraph.create_page(title='Jmdkh-mltb Drive Search', content=content))["path"] for content in telegraph_content]
+    path = [(await telegraph.create_page(title='xDrive Search', content=content))["path"] for content in telegraph_content]
     if len(path) > 1:
         await telegraph.edit_telegraph(path, telegraph_content)
     buttons = ButtonMaker()
-    buttons.ubutton("🔎 VIEW", f"https://telegra.ph/{path[0]}", 'header')
+    buttons.ubutton("🔎 Check 🔍", f"https://telegra.ph/{path[0]}", 'header')
     buttons = extra_btns(buttons)
     return buttons.build_menu(1)
 
@@ -189,7 +189,7 @@ def get_readable_message():
         buttons.ibutton("➡️", "status nex")
         button = buttons.build_menu(3)
     msg += f"<b>📊 Performance Meter 📊</b>\n\n"
-    msg += f"<b>🖥 CPU            : {cpu_percent()}%\n</b>🗃 DISK           : {get_readable_file_size(disk_usage(config_dict['DOWNLOAD_DIR']).free)}</b>"
+    msg += f"<b>🖥 CPU            : {cpu_percent()}%</b>\n<b>🗃 DISK           : {get_readable_file_size(disk_usage(config_dict['DOWNLOAD_DIR']).free)}</b>"
     msg += f"\n<b>⚙️ RAM           : {virtual_memory().percent}%</b>\n<b>🖥 UPTIME     : {get_readable_time(time() - botStartTime)}</b>"
     msg += f"\n\n<b>⚡️ Internet Speed Meter ⚡️</b>\n\n"
     msg += f"<b>🔻 Download  : {get_readable_file_size(dl_speed)}/s</b>\n<b>🔺 Upload       : {get_readable_file_size(up_speed)}/s</b>"

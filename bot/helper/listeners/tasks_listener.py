@@ -91,17 +91,17 @@ class MirrorLeechListener:
 
     def __setMode(self):
         if self.isLeech:
-            mode = 'Leech'
+            mode = 'Upload to Telegram'
         elif self.isClone:
-            mode = 'Clone'
+            mode = 'Clone to Google Drive'
         elif self.upPath != 'gd':
-            mode = 'Rclone'
+            mode = 'RClone'
         else:
-            mode = 'Drive'
+            mode = 'Google Drive'
         if self.isZip:
-            mode += ' as Zip'
+            mode += 'File as Zip'
         elif self.extract:
-            mode += ' as Unzip'
+            mode += 'File as Unzip'
         self.extra_details['mode'] = mode
 
     def __source(self):
@@ -366,15 +366,16 @@ class MirrorLeechListener:
             await DbManger().remove_download(self.raw_url)
         if self.isSuperGroup and config_dict['INCOMPLETE_TASK_NOTIFIER'] and DATABASE_URL:
             await DbManger().rm_complete_task(self.message.link)
-        msg = f"<b>Name: </b><code>{escape(name)}</code>\n\n<b>Size: </b>{get_readable_file_size(size)}"
+        msg = f"<b>📄 File Name :</b> <code>{escape(name)}</code>\n<b>📥 Total Size : {get_readable_file_size(size)}</b>"
         LOGGER.info(f'Task Done: {name}')
         if self.isLeech:
-            msg += f'\n<b>Total Files</b>: {folders}'
-            msg += f"\n<b>Elapsed</b>: {get_readable_time(time() - self.extra_details['startTime'])}"
+            msg += f'\n<b>🗂 Total Files : {folders}</b>'
+            msg += f"\n<b>🎯 Type Uploads</b>: {self.extra_details['mode']}"
+            msg += f"\n<b>⏳ Elapsed : {get_readable_time(time() - self.extra_details['startTime'])}</b>"
             if mime_type != 0:
                 msg += f'\n<b>Corrupted Files</b>: {mime_type}'
-            msg += f'\n<b>#cc</b>: {self.tag}'
-            msg += f"\n<b>Upload</b>: {self.extra_details['mode']}\n\n"
+            msg += f'\n\n<b>👤 By : {self.tag}</b>'
+
             if not files:
                 await sendMessage(self.message, msg)
                 if self.logMessage:
