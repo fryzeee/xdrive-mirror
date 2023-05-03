@@ -31,18 +31,20 @@ STATUS_START = 0
 PAGES = 1
 PAGE_NO = 1
 
+
 class MirrorStatus:
-    STATUS_UPLOADING = "Uploading. . . 📤"
-    STATUS_DOWNLOADING = "Downloading. . . 📥"
-    STATUS_CLONING = "Cloning. . . ♻️"
-    STATUS_QUEUEDL = "Queued Download. . . 📝"
-    STATUS_QUEUEUP = "Queued Upload. . . 📝"
-    STATUS_PAUSED = "Paused. . . ⭕️"
-    STATUS_ARCHIVING = "Archiving. . . 🔐"
-    STATUS_EXTRACTING = "Extracting. . . 📂"
-    STATUS_SPLITTING = "Split. . . ✂️ "
-    STATUS_CHECKING = "Checking. . . 🔎"
-    STATUS_SEEDING = "Seeding. . . 🌧"
+    STATUS_UPLOADING = "Upload"
+    STATUS_DOWNLOADING = "Download"
+    STATUS_CLONING = "Clone"
+    STATUS_QUEUEDL = "QueueDl"
+    STATUS_QUEUEUP = "QueueUp"
+    STATUS_PAUSED = "Pause"
+    STATUS_ARCHIVING = "Archive"
+    STATUS_EXTRACTING = "Extract"
+    STATUS_SPLITTING = "Split"
+    STATUS_CHECKING = "CheckUp"
+    STATUS_SEEDING = "Seed"
+
 
 class setInterval:
     def __init__(self, interval, action):
@@ -92,23 +94,23 @@ def bt_selection_buttons(id_, isCanCncl=True):
     buttons = ButtonMaker()
     BASE_URL = config_dict['BASE_URL']
     if config_dict['WEB_PINCODE']:
-        buttons.ubutton("👆 Select Files 👆", f"{BASE_URL}/app/files/{id_}")
-        buttons.ibutton("🔰 Pin Code 🔰", f"btsel pin {gid} {pincode}")
+        buttons.ubutton("Select Files", f"{BASE_URL}/app/files/{id_}")
+        buttons.ibutton("Pincode", f"btsel pin {gid} {pincode}")
     else:
         buttons.ubutton(
-            "👆 Select Files 👆", f"{BASE_URL}/app/files/{id_}?pin_code={pincode}")
+            "Select Files", f"{BASE_URL}/app/files/{id_}?pin_code={pincode}")
     if isCanCncl:
-        buttons.ibutton("🚫 Cancel 🚫", f"btsel rm {gid} {id_}")
-    buttons.ibutton("✅ Done Selecting ✅", f"btsel done {gid} {id_}")
+        buttons.ibutton("Cancel", f"btsel rm {gid} {id_}")
+    buttons.ibutton("Done Selecting", f"btsel done {gid} {id_}")
     return buttons.build_menu(2)
 
 
 async def get_telegraph_list(telegraph_content):
-    path = [(await telegraph.create_page(title='xDrive Search', content=content))["path"] for content in telegraph_content]
+    path = [(await telegraph.create_page(title='Jmdkh-mltb Drive Search', content=content))["path"] for content in telegraph_content]
     if len(path) > 1:
         await telegraph.edit_telegraph(path, telegraph_content)
     buttons = ButtonMaker()
-    buttons.ubutton("🔎 Check 🔍", f"https://telegra.ph/{path[0]}", 'header')
+    buttons.ubutton("🔎 VIEW", f"https://telegra.ph/{path[0]}", 'header')
     buttons = extra_btns(buttons)
     return buttons.build_menu(1)
 
@@ -212,7 +214,7 @@ async def turn_page(data):
 
 
 def get_readable_time(seconds):
-    periods = [(' Days ', 86400), (' Hours ', 3600), (' Minutes ', 60), (' Second ', 1)]
+    periods = [('d', 86400), ('h', 3600), ('m', 60), ('s', 1)]
     result = ''
     for period_name, period_seconds in periods:
         if seconds >= period_seconds:
