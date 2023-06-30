@@ -92,17 +92,17 @@ class MirrorLeechListener:
 
     def __setMode(self):
         if self.isLeech:
-            mode = 'Leech'
+            mode = 'Upload to Telegram'
         elif self.isClone:
-            mode = 'Clone'
+            mode = 'Cloned'
         elif self.upPath != 'gd':
             mode = 'Rclone'
         else:
-            mode = 'Drive'
+            mode = 'Upload to Google Drive'
         if self.compress:
-            mode += ' as Zip'
+            mode += 'Upload as .Zip'
         elif self.extract:
-            mode += ' as Unzip'
+            mode += 'Upload as Unzip or Extracted'
         self.extra_details['mode'] = mode
 
     def __source(self):
