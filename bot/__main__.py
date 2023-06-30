@@ -117,17 +117,17 @@ async def log(_, message):
 help_string = f'''
 Available Commands :
 
-/{BotCommands.MirrorCommand[0]} : Start mirroring to Google Drive.
+/{BotCommands.MirrorCommand} : Start mirroring to Google Drive.
 
-/{BotCommands.QbMirrorCommand[0]} : Start Mirroring to Google Drive Using qBitTorrent.
+/{BotCommands.QbMirrorCommand} : Start Mirroring to Google Drive Using qBitTorrent.
 
-/{BotCommands.YtdlCommand[0]} : Mirror YTDL Supported Link.
+/{BotCommands.YtdlCommand} : Mirror YTDL Supported Link.
 
-/{BotCommands.LeechCommand[0]} : Start Leeching / Upload to Telegram.
+/{BotCommands.LeechCommand} : Start Leeching / Upload to Telegram.
 
-/{BotCommands.QbLeechCommand[0]} : Start Leeching / Upload Using qBitTorrent.
+/{BotCommands.QbLeechCommand} : Start Leeching / Upload Using qBitTorrent.
 
-/{BotCommands.YtdlLeechCommand[0]} : Leech YTDL Supported Link.
+/{BotCommands.YtdlLeechCommand} : Leech YTDL Supported Link.
 
 /{BotCommands.CloneCommand} : Copy File/Folder to Google Drive.
 
@@ -137,17 +137,17 @@ Available Commands :
 
 /{BotCommands.CancelMirror}: Cancel Mirror
 
-/{BotCommands.CancelAllCommand[0]} : Cancel All Tasks.
+/{BotCommands.CancelAllCommand} : Cancel All Tasks.
 
 /{BotCommands.ListCommand} : Search File/Folder of Google Drive.
 
 /{BotCommands.SearchCommand} : Torrents Search with API.
 
-/{BotCommands.StatusCommand[0]} : Shows a Status of All the Downloads.
+/{BotCommands.StatusCommand} : Shows a Status of All the Downloads.
 
 /{BotCommands.StatsCommand} : Show Stats of the Machine.
 
-/{BotCommands.PingCommand[0]} : Check Active Bot.
+/{BotCommands.PingCommand} : Check Active Bot.
 '''
 
 
