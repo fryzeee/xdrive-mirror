@@ -604,7 +604,7 @@ class GoogleDriveHelper:
                     msg += f"⁍<a href='https://drive.google.com/drive/folders/{file.get('id')}'>{file.get('name')}" 
                 else:
                     furl = f"https://drive.google.com/uc?id={file.get('id')}&export=download"
-                    msg += f"📄 File Name : <code>{file.get('name')}</code><br>📥 Total Size : {get_readable_file_size(int(file.get('size', 0)))}<br>⚙️ Type Files : File - 📄<br>🔗 Link :-<br>"
+                    msg += f"📄 File Name : <code>{file.get('name')}</code><br>📥 Total Size : {get_readable_file_size(int(file.get('size', 0)))}<br>⚙️ Type Files : File / 📄<br>🔗 Link :-<br>"
                     msg += f"<b><a href={furl}>⚡️ Google Drive ⚡️</a></b> | "
                     if index_url:
                         if isRecur:
