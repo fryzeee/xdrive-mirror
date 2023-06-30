@@ -135,7 +135,7 @@ Available Commands :
 
 /{BotCommands.DeleteCommand} : Delete File/Folder From Google Drive.
 
-/{BotCommands.CancelMirror}: Cancel Mirror
+/{BotCommands.CancelMirror} : Cancel Mirror
 
 /{BotCommands.ListCommand} : Search File/Folder of Google Drive.
 
@@ -192,7 +192,7 @@ async def restart_notification():
     if DATABASE_URL:
         if INCOMPLETE_TASK_NOTIFIER and (notifier_dict := await DbManger().get_incomplete_tasks()):
             for cid, data in notifier_dict.items():
-                msg = 'Restarted Successfully!' if cid == chat_id else 'Bot Restarted!'
+                msg = 'Restarted Successfully' if cid == chat_id else 'Bot Restarted!'
                 for tag, links in data.items():
                     msg += f"\n\n{tag}: "
                     for index, link in enumerate(links, start=1):

@@ -27,7 +27,7 @@ async def path_updates(_, query, obj):
     message = query.message
     data = query.data.split()
     if data[1] == 'cancel':
-        obj.remote = 'Task has been cancelled!'
+        obj.remote = 'Task Has Been Cancelled'
         obj.path = ''
         obj.is_cancelled = True
         obj.event.set()
