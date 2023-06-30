@@ -403,7 +403,7 @@ class MirrorLeechListener:
         if self.isLeech:
             msg += f'\n<b>🗂 Total Files : {folders}</b>'
             msg += f"\n<b>⏳ Finished : {get_readable_time(time() - self.extra_details['startTime'])}</b>"
-            msg += f"\n<b>✅ Status :- Successfully {self.extra_details['mode']}</b>"
+            msg += f"\n<b>✅ Status : Successfully {self.extra_details['mode']}</b>"
             if mime_type != 0:
                 msg += f'\n<b>🪲 Corrupted Files : {mime_type}</b>'
             msg += f'\n\n<b>👤 By : {self.tag}</b>\n\n'
@@ -453,7 +453,7 @@ class MirrorLeechListener:
                 except:
                     pass
             msg += f"\n<b>⏳ Finished : {get_readable_time(time() - self.extra_details['startTime'])}</b>"
-            msg += f"\n<b>✅ Status :- Successfully {self.extra_details['mode']}</b>"
+            msg += f"\n<b>✅ Status : Successfully {self.extra_details['mode']}</b>"
             msg += f"\n\n<b>👤 By : {self.tag}</b>"
             if link or rclonePath and config_dict['RCLONE_SERVE_URL']:
                 buttons = ButtonMaker()
