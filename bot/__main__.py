@@ -84,7 +84,7 @@ async def start(_, message):
             'Now I will send your files and links here.\n'
     else:
         start_string = 'This bot can mirror all your links to Google Drive!\n' \
-            'Type /{BotCommands.HelpCommand} to get a list of available commands\n'
+            'Type /help to get a list of available commands\n'
     await sendMessage(message, start_string)
 
 
@@ -117,9 +117,9 @@ async def log(_, message):
 help_string = f'''
 Available Commands :
 
-/{BotCommands.MirrorCommand} : Start mirroring to Google Drive.
+/{BotCommands.MirrorCommand} : Start Mirror to Google Drive.
 
-/{BotCommands.QbMirrorCommand} : Start Mirroring to Google Drive Using qBitTorrent.
+/{BotCommands.QbMirrorCommand} : Start Mirror to Google Drive Using qBitTorrent.
 
 /{BotCommands.YtdlCommand} : Mirror YTDL Supported Link.
 
@@ -137,8 +137,6 @@ Available Commands :
 
 /{BotCommands.CancelMirror}: Cancel Mirror
 
-/{BotCommands.CancelAllCommand} : Cancel All Tasks.
-
 /{BotCommands.ListCommand} : Search File/Folder of Google Drive.
 
 /{BotCommands.SearchCommand} : Torrents Search with API.
@@ -148,6 +146,23 @@ Available Commands :
 /{BotCommands.StatsCommand} : Show Stats of the Machine.
 
 /{BotCommands.PingCommand} : Check Active Bot.
+
+Commands for ZIP / UNZIP Mirror
+Note : Add Commands [ -z / -e ] After Your Link
+-z = Zip 
+-e = Unzip
+
+/{BotCommands.MirrorCommand} [Link] -z : Start Mirror and Upload to Google Drive as .ZIP File.
+
+/{BotCommands.MirrorCommand} [Link] -e : Start Mirror and Upload to Google Drive as Extracted File.
+
+/{BotCommands.QbMirrorCommand} [Link] -z  : Start Mirror and Upload to Google Drive as .ZIP File Using qBitTorrent.
+
+/{BotCommands.QbMirrorCommand} [Link] -e  : Start Mirror and Upload to Google Drive as Extracted File Using qBitTorrent.
+
+/{BotCommands.LeechCommand} [Link] -z : Start Leech / Upload File to Telegram as .ZIP File.
+
+/{BotCommands.LeechCommand} [Link] -e : Start Leech / Upload File to Telegram as as Extracted File.
 '''
 
 
