@@ -22,7 +22,9 @@ async def list_buttons(user_id, isRecursive=True):
     buttons = ButtonMaker()
     buttons.ibutton("📁 Folders", f"list_types {user_id} Folders {isRecursive}")
     buttons.ibutton("📄 Files", f"list_types {user_id} Files {isRecursive}")
-    buttons.ibutton("👍 File & Folder", f"list_types {user_id} both {isRecursive}")
+    buttons.ibutton("👍 Both", f"list_types {user_id} both {isRecursive}")
+    buttons.ibutton(f"💡 Recursive : {isRecursive}",
+                    f"list_types {user_id} rec {isRecursive}")
     buttons.ibutton("🚫 Cancel 🚫", f"list_types {user_id} cancel")
     return buttons.build_menu(2)
 
@@ -39,10 +41,10 @@ async def _list_drive(key, message, item_type, isRecursive):
         except Exception as e:
             await editMessage(message, e)
             return
-        msg = f'<b>✅ Found {contents_no} Result For <i>{key}</i></b>\n\n<b>💡 Type : {item_type}\n<b>💡 Recursive : {isRecursive}</b>'
+        msg = f'<b>✅ Found {contents_no} Result For {key} ✅</b>'
         await editMessage(message, msg, button)
     else:
-        msg = f'<b>❌ No Result Found For <i>{key}</i></b>\n\n<b>💡 Type : {item_type}</b>\n<b>💡 Recursive : {isRecursive}</b>'
+        msg = f'<b>❌ No Result Found For {key} ❌</b>'
         await editMessage(message, msg)
 
 
