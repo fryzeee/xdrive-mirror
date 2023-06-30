@@ -83,8 +83,8 @@ async def start(_, message):
         start_string = 'Bot Started.\n' \
             'Now I will send your files and links here.\n'
     else:
-        start_string = 'This Bot can mirror all your links to Google Drive!\n' \
-            'Type /{BotCommands.HelpCommand[0]} to get a list of available commands\n'
+        start_string = 'This bot can mirror all your links to Google Drive!\n' \
+            'Type /{BotCommands.HelpCommand} to get a list of available commands\n'
     await sendMessage(message, start_string)
 
 
