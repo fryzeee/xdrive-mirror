@@ -331,10 +331,7 @@ async def load_config():
     STOP_DUPLICATE_TASKS = STOP_DUPLICATE_TASKS.lower() == 'true'
 
     if not STOP_DUPLICATE_TASKS and DATABASE_URL:
-        DbManger().clear_download_links()
-
-    DISABLE_DRIVE_LINK = environ.get('DISABLE_DRIVE_LINK', '')
-    DISABLE_DRIVE_LINK = DISABLE_DRIVE_LINK.lower() == 'true'
+        await DbManger().clear_download_links()
 
     DISABLE_LEECH = environ.get('DISABLE_LEECH', '')
     DISABLE_LEECH = DISABLE_LEECH.lower() == 'true'
@@ -499,7 +496,6 @@ async def load_config():
         "ENABLE_RATE_LIMIT": ENABLE_RATE_LIMIT,
         "ENABLE_MESSAGE_FILTER": ENABLE_MESSAGE_FILTER,
         "STOP_DUPLICATE_TASKS": STOP_DUPLICATE_TASKS,
-        "DISABLE_DRIVE_LINK": DISABLE_DRIVE_LINK,
         "SET_COMMANDS": SET_COMMANDS,
         "DISABLE_LEECH": DISABLE_LEECH,
         "REQUEST_LIMITS": REQUEST_LIMITS,
@@ -537,7 +533,7 @@ async def get_buttons(key=None, edit_type=None):
             buttons.ibutton('View', "botset view var")
         buttons.ibutton('Back', "botset back")
         buttons.ibutton('Close', "botset close")
-        for x in range(0, len(config_dict)-1, 10):
+        for x in range(0, len(config_dict), 10):
             buttons.ibutton(
                 f'{int(x/10)}', f"botset start var {x}", position='footer')
         msg = f'Config Variables | Page: {int(START/10)} | State: {STATE}'
@@ -558,7 +554,7 @@ Timeout: 60 sec'''
         buttons.ibutton('Add new key', "botset editaria newkey")
         buttons.ibutton('Back', "botset back")
         buttons.ibutton('Close', "botset close")
-        for x in range(0, len(aria2_options)-1, 10):
+        for x in range(0, len(aria2_options), 10):
             buttons.ibutton(
                 f'{int(x/10)}', f"botset start aria {x}", position='footer')
         msg = f'Aria2c Options | Page: {int(START/10)} | State: {STATE}'
@@ -571,7 +567,7 @@ Timeout: 60 sec'''
             buttons.ibutton('View', "botset view qbit")
         buttons.ibutton('Back', "botset back")
         buttons.ibutton('Close', "botset close")
-        for x in range(0, len(qbit_options)-1, 10):
+        for x in range(0, len(qbit_options), 10):
             buttons.ibutton(
                 f'{int(x/10)}', f"botset start qbit {x}", position='footer')
         msg = f'Qbittorrent Options | Page: {int(START/10)} | State: {STATE}'
@@ -694,7 +690,7 @@ async def edit_variable(client, message, pre_message, key):
         await set_commands(client)
 
 
-async def edit_aria(client, message, pre_message, key):
+async def edit_aria(_, message, pre_message, key):
     handler_dict[message.chat.id] = False
     value = message.text
     if key == 'newkey':
@@ -720,7 +716,7 @@ async def edit_aria(client, message, pre_message, key):
         await DbManger().update_aria2(key, value)
 
 
-async def edit_qbit(client, message, pre_message, key):
+async def edit_qbit(_, message, pre_message, key):
     handler_dict[message.chat.id] = False
     value = message.text
     if value.lower() == 'true':
@@ -739,7 +735,7 @@ async def edit_qbit(client, message, pre_message, key):
         await DbManger().update_qbittorrent(key, value)
 
 
-async def update_private_file(client, message, pre_message):
+async def update_private_file(_, message, pre_message):
     handler_dict[message.chat.id] = False
     if not message.media and (file_name := message.text):
         fn = file_name.rsplit('.zip', 1)[0]
@@ -1103,7 +1099,7 @@ async def edit_bot_settings(client, query):
         await message.delete()
 
 
-async def bot_settings(client, message):
+async def bot_settings(_, message):
     msg, button = await get_buttons()
     globals()['START'] = 0
     await sendMessage(message, msg, button)

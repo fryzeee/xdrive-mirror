@@ -11,10 +11,11 @@ from aiofiles.os import path as aiopath
 from aiofiles.os import remove as aioremove
 from aioshutil import move
 
-from bot import (DATABASE_URL, DOWNLOAD_DIR, LOGGER, MAX_SPLIT_SIZE, Interval,
-                 aria2, config_dict, download_dict, download_dict_lock,
-                 non_queued_dl, non_queued_up, queue_dict_lock, queued_dl,
-                 queued_up, status_reply_dict_lock, user_data)
+from bot import (DATABASE_URL, DOWNLOAD_DIR, GLOBAL_EXTENSION_FILTER, LOGGER,
+                 MAX_SPLIT_SIZE, Interval, aria2, config_dict, download_dict,
+                 download_dict_lock, non_queued_dl, non_queued_up,
+                 queue_dict_lock, queued_dl, queued_up, status_reply_dict_lock,
+                 user_data)
 from bot.helper.ext_utils.bot_utils import (extra_btns, get_readable_file_size,
                                             get_readable_time, sync_to_async)
 from bot.helper.ext_utils.db_handler import DbManger
@@ -22,7 +23,7 @@ from bot.helper.ext_utils.exceptions import NotSupportedExtractionArchive
 from bot.helper.ext_utils.fs_utils import (clean_download, clean_target,
                                            get_base_name, get_path_size,
                                            is_archive, is_archive_split,
-                                           is_first_archive_split)
+                                           is_first_archive_split, join_files)
 from bot.helper.ext_utils.leech_utils import split_file
 from bot.helper.ext_utils.task_manager import start_from_queued
 from bot.helper.mirror_utils.rclone_utils.transfer import RcloneTransferHelper
@@ -44,19 +45,18 @@ from bot.helper.telegram_helper.message_utils import (delete_all_messages,
 
 
 class MirrorLeechListener:
-    def __init__(self, message, isZip=False, extract=False, isQbit=False,
-                 isLeech=False, pswd=None, tag=None, select=False,
-                 seed=False, sameDir=None, rcFlags=None, upPath=None, isClone=False, raw_url=None,
+    def __init__(self, message, compress=False, extract=False, isQbit=False,
+                 isLeech=False, tag=None, select=False,
+                 seed=False, sameDir=None, rcFlags=None, upPath=None, join=False, isClone=False, raw_url=None,
                  drive_id=None, index_link=None, dmMessage=None, logMessage=None):
         if not sameDir:
             sameDir = {}
         self.message = message
         self.uid = message.id
         self.extract = extract
-        self.isZip = isZip
+        self.compress = compress
         self.isQbit = isQbit
         self.isLeech = isLeech
-        self.pswd = pswd
         self.tag = tag
         self.seed = seed
         self.newDir = ""
@@ -68,6 +68,7 @@ class MirrorLeechListener:
         self.sameDir = sameDir
         self.rcFlags = rcFlags
         self.upPath = upPath
+        self.join = join
         self.isClone = isClone
         self.raw_url = raw_url
         self.drive_id = drive_id
@@ -91,17 +92,17 @@ class MirrorLeechListener:
 
     def __setMode(self):
         if self.isLeech:
-            mode = 'Upload to Telegram'
+            mode = 'Leech'
         elif self.isClone:
-            mode = 'Clone to Google Drive'
+            mode = 'Clone'
         elif self.upPath != 'gd':
-            mode = 'RC Clone'
+            mode = 'Rclone'
         else:
-            mode = 'Upload to Google Drive'
-        if self.isZip:
-            mode += 'File as Zip'
+            mode = 'Drive'
+        if self.compress:
+            mode += ' as Zip'
         elif self.extract:
-            mode += 'File as Unzip'
+            mode += ' as Unzip'
         self.extra_details['mode'] = mode
 
     def __source(self):
@@ -128,17 +129,24 @@ class MirrorLeechListener:
             await DbManger().add_incomplete_task(self.message.chat.id, self.message.link, self.tag)
 
     async def onDownloadComplete(self):
-        if len(self.sameDir) > 0:
-            await sleep(8)
         multi_links = False
+        while True:
+            if self.sameDir:
+                if self.sameDir['total'] in [1, 0] or self.sameDir['total'] > 1 and len(self.sameDir['tasks']) > 1:
+                    break
+            else:
+                break
+            await sleep(0.2)
+
         async with download_dict_lock:
-            if len(self.sameDir) > 1:
-                self.sameDir.remove(self.uid)
-                folder_name = (await listdir(self.dir))[-1]
-                path = f"{self.dir}/{folder_name}"
-                des_path = f"{DOWNLOAD_DIR}{list(self.sameDir)[0]}/{folder_name}"
+            if self.sameDir and self.sameDir['total'] > 1:
+                self.sameDir['tasks'].remove(self.uid)
+                self.sameDir['total'] -= 1
+                folder_name = self.sameDir['name']
+                spath = f"{self.dir}/{folder_name}"
+                des_path = f"{DOWNLOAD_DIR}{list(self.sameDir['tasks'])[0]}/{folder_name}"
                 await makedirs(des_path, exist_ok=True)
-                for item in await listdir(path):
+                for item in await listdir(spath):
                     if item.endswith(('.aria2', '.!qB')):
                         continue
                     item_path = f"{self.dir}/{folder_name}/{item}"
@@ -151,71 +159,54 @@ class MirrorLeechListener:
             name = str(download.name()).replace('/', '')
             gid = download.gid()
         LOGGER.info(f"Download completed: {name}")
+
         if multi_links:
             await self.onUploadError('Downloaded! Waiting for other tasks...')
             return
+
         if name == "None" or self.isQbit or not await aiopath.exists(f"{self.dir}/{name}"):
-            name = (await listdir(self.dir))[-1]
-        m_path = f"{self.dir}/{name}"
-        size = await get_path_size(m_path)
+            files = await listdir(self.dir)
+            name = files[-1]
+            if name == "yt-dlp-thumb":
+                name = files[0]
+
+        dl_path = f"{self.dir}/{name}"
+        up_path = ''
+        size = await get_path_size(dl_path)
         async with queue_dict_lock:
             if self.uid in non_queued_dl:
                 non_queued_dl.remove(self.uid)
         await start_from_queued()
         user_dict = user_data.get(self.message.from_user.id, {})
-        if self.isZip:
-            if self.seed and self.isLeech:
-                self.newDir = f"{self.dir}10000"
-                path = f"{self.newDir}/{name}.zip"
-            else:
-                path = f"{m_path}.zip"
-            async with download_dict_lock:
-                download_dict[self.uid] = ZipStatus(name, size, gid, self)
-            LEECH_SPLIT_SIZE = user_dict.get(
-                'split_size', False) or config_dict['LEECH_SPLIT_SIZE']
-            LEECH_SPLIT_SIZE = min(LEECH_SPLIT_SIZE, MAX_SPLIT_SIZE)
-            cmd = ["7z", f"-v{LEECH_SPLIT_SIZE}b", "a",
-                   "-mx=0", f"-p{self.pswd}", path, m_path]
-            if self.isLeech and int(size) > LEECH_SPLIT_SIZE:
-                if self.pswd is None:
-                    del cmd[4]
-                LOGGER.info(f'Zip: orig_path: {m_path}, zip_path: {path}.0*')
-            else:
-                del cmd[1]
-                if self.pswd is None:
-                    del cmd[3]
-                LOGGER.info(f'Zip: orig_path: {m_path}, zip_path: {path}')
-            if self.suproc == 'cancelled':
-                return
-            self.suproc = await create_subprocess_exec(*cmd)
-            code = await self.suproc.wait()
-            if code == -9:
-                return
-            elif not self.seed:
-                await clean_target(m_path)
-        elif self.extract:
+
+        if self.join:
+            if await aiopath.isdir(dl_path):
+                await join_files(dl_path)
+
+        if self.extract:
+            pswd = self.extract if isinstance(self.extract, str) else ''
             try:
-                if await aiopath.isfile(m_path):
-                    path = get_base_name(m_path)
+                if await aiopath.isfile(dl_path):
+                    up_path = get_base_name(dl_path)
                 LOGGER.info(f"Extracting: {name}")
                 async with download_dict_lock:
                     download_dict[self.uid] = ExtractStatus(
                         name, size, gid, self)
-                if await aiopath.isdir(m_path):
+                if await aiopath.isdir(dl_path):
                     if self.seed:
                         self.newDir = f"{self.dir}10000"
-                        path = f"{self.newDir}/{name}"
+                        up_path = f"{self.newDir}/{name}"
                     else:
-                        path = m_path
-                    for dirpath, subdir, files in await sync_to_async(walk, m_path, topdown=False):
+                        up_path = dl_path
+                    for dirpath, _, files in await sync_to_async(walk, dl_path, topdown=False):
                         for file_ in files:
                             if is_first_archive_split(file_) or is_archive(file_) and not file_.endswith('.rar'):
                                 f_path = ospath.join(dirpath, file_)
                                 t_path = dirpath.replace(
                                     self.dir, self.newDir) if self.seed else dirpath
                                 cmd = [
-                                    "7z", "x", f"-p{self.pswd}", f_path, f"-o{t_path}", "-aot", "-xr!@PaxHeader"]
-                                if self.pswd is None:
+                                    "7z", "x", f"-p{pswd}", f_path, f"-o{t_path}", "-aot", "-xr!@PaxHeader"]
+                                if not pswd:
                                     del cmd[2]
                                 if self.suproc == 'cancelled' or self.suproc is not None and self.suproc.returncode == -9:
                                     return
@@ -235,12 +226,12 @@ class MirrorLeechListener:
                                     except:
                                         return
                 else:
-                    if self.seed and self.isLeech:
+                    if self.seed:
                         self.newDir = f"{self.dir}10000"
-                        path = path.replace(self.dir, self.newDir)
-                    cmd = ["7z", "x", f"-p{self.pswd}", m_path,
-                           f"-o{path}", "-aot", "-xr!@PaxHeader"]
-                    if self.pswd is None:
+                        up_path = up_path.replace(self.dir, self.newDir)
+                    cmd = ["7z", "x", f"-p{pswd}", dl_path,
+                           f"-o{up_path}", "-aot", "-xr!@PaxHeader"]
+                    if not pswd:
                         del cmd[2]
                     if self.suproc == 'cancelled':
                         return
@@ -249,29 +240,70 @@ class MirrorLeechListener:
                     if code == -9:
                         return
                     elif code == 0:
-                        LOGGER.info(f"Extracted Path: {path}")
+                        LOGGER.info(f"Extracted Path: {up_path}")
                         if not self.seed:
                             try:
-                                await aioremove(m_path)
+                                await aioremove(dl_path)
                             except:
                                 return
                     else:
                         LOGGER.error(
                             'Unable to extract archive! Uploading anyway')
                         self.newDir = ""
-                        path = m_path
+                        up_path = dl_path
             except NotSupportedExtractionArchive:
                 LOGGER.info("Not any valid archive, uploading file as it is.")
                 self.newDir = ""
-                path = m_path
-        else:
-            path = m_path
-        up_dir, up_name = path.rsplit('/', 1)
+                up_path = dl_path
+
+        if self.compress:
+            pswd = self.compress if isinstance(self.compress, str) else ''
+            if up_path:
+                dl_path = up_path
+                up_path = f"{up_path}.zip"
+            elif self.seed and self.isLeech:
+                self.newDir = f"{self.dir}10000"
+                up_path = f"{self.newDir}/{name}.zip"
+            else:
+                up_path = f"{dl_path}.zip"
+            async with download_dict_lock:
+                download_dict[self.uid] = ZipStatus(name, size, gid, self)
+            LEECH_SPLIT_SIZE = user_dict.get(
+                'split_size', False) or config_dict['LEECH_SPLIT_SIZE']
+            LEECH_SPLIT_SIZE = min(LEECH_SPLIT_SIZE, MAX_SPLIT_SIZE)
+            cmd = ["7z", f"-v{LEECH_SPLIT_SIZE}b", "a",
+                   "-mx=0", f"-p{pswd}", up_path, dl_path]
+            for ext in GLOBAL_EXTENSION_FILTER:
+                ex_ext = f'-xr!*.{ext}'
+                cmd.append(ex_ext)
+            if self.isLeech and int(size) > LEECH_SPLIT_SIZE:
+                if not pswd:
+                    del cmd[4]
+                LOGGER.info(
+                    f'Zip: orig_path: {dl_path}, zip_path: {up_path}.0*')
+            else:
+                del cmd[1]
+                if not pswd:
+                    del cmd[3]
+                LOGGER.info(f'Zip: orig_path: {dl_path}, zip_path: {up_path}')
+            if self.suproc == 'cancelled':
+                return
+            self.suproc = await create_subprocess_exec(*cmd)
+            code = await self.suproc.wait()
+            if code == -9:
+                return
+            elif not self.seed:
+                await clean_target(dl_path)
+
+        if not self.compress and not self.extract:
+            up_path = dl_path
+
+        up_dir, up_name = up_path.rsplit('/', 1)
         size = await get_path_size(up_dir)
         if self.isLeech:
             m_size = []
             o_files = []
-            if not self.isZip:
+            if not self.compress:
                 checked = False
                 LEECH_SPLIT_SIZE = user_dict.get(
                     'split_size', False) or config_dict['LEECH_SPLIT_SIZE']
@@ -342,7 +374,7 @@ class MirrorLeechListener:
             await update_all_messages()
             await tg.upload(o_files, m_size, size)
         elif self.upPath == 'gd':
-            size = await get_path_size(path)
+            size = await get_path_size(up_path)
             LOGGER.info(f"Upload Name: {up_name}")
             drive = GoogleDriveHelper(up_name, up_dir, self)
             upload_status = GdriveStatus(
@@ -350,32 +382,31 @@ class MirrorLeechListener:
             async with download_dict_lock:
                 download_dict[self.uid] = upload_status
             await update_all_messages()
-            await sync_to_async(drive.upload, up_name, size, self.drive_id or config_dict['GDRIVE_ID'])
+            await sync_to_async(drive.upload, up_name, size, self.drive_id)
         else:
-            size = await get_path_size(path)
+            size = await get_path_size(up_path)
             LOGGER.info(f"Upload Name: {up_name}")
             RCTransfer = RcloneTransferHelper(self, up_name)
             async with download_dict_lock:
                 download_dict[self.uid] = RcloneStatus(
                     RCTransfer, self.message, gid, 'up', self.extra_details)
             await update_all_messages()
-            await RCTransfer.upload(path, size)
+            await RCTransfer.upload(up_path, size)
 
-    async def onUploadComplete(self, link, size, files, folders, mime_type, name, rclonePath='', drive_id=None):
+    async def onUploadComplete(self, link, size, files, folders, mime_type, name, rclonePath=''):
         if DATABASE_URL and config_dict['STOP_DUPLICATE_TASKS'] and self.raw_url:
             await DbManger().remove_download(self.raw_url)
         if self.isSuperGroup and config_dict['INCOMPLETE_TASK_NOTIFIER'] and DATABASE_URL:
             await DbManger().rm_complete_task(self.message.link)
-        msg = f"<b>📂 File Name :</b> <code>{escape(name)}</code>\n<b>📥 Total Size : {get_readable_file_size(size)}</b>"
+        msg = f"<b>Name: </b><code>{escape(name)}</code>\n\n<b>Size: </b>{get_readable_file_size(size)}"
         LOGGER.info(f'Task Done: {name}')
         if self.isLeech:
-            msg += f'\n<b>🗂 Total Files : {folders}</b>'
-            msg += f"\n<b>⏳ Finished : {get_readable_time(time() - self.extra_details['startTime'])}</b>"
-            msg += f"\n<b>✅ Status :- Successfully {self.extra_details['mode']}</b>"
+            msg += f'\n<b>Total Files</b>: {folders}'
+            msg += f"\n<b>Elapsed</b>: {get_readable_time(time() - self.extra_details['startTime'])}"
             if mime_type != 0:
-                msg += f'\n<b>🪲 Corrupted Files : {mime_type}</b>'
-            msg += f'\n\n<b>👤 By : {self.tag}</b>\n\n'
-
+                msg += f'\n<b>Corrupted Files</b>: {mime_type}'
+            msg += f'\n<b>#cc</b>: {self.tag}'
+            msg += f"\n<b>Upload</b>: {self.extra_details['mode']}\n\n"
             if not files:
                 await sendMessage(self.message, msg)
                 if self.logMessage:
@@ -391,7 +422,7 @@ class MirrorLeechListener:
                 buttons = ButtonMaker()
                 buttons = extra_btns(buttons)
                 if self.isSuperGroup and not self.message.chat.has_protected_content:
-                    buttons.ibutton('🤝 Send Me to DM 🤝', 'save', 'footer')
+                    buttons.ibutton('Save This Message', 'save', 'footer')
                 for index, (link, name) in enumerate(files.items(), start=1):
                     fmsg += f"{index}. <a href='{link}'>{name}</a>\n"
                     if len(fmsg.encode() + msg.encode()) > 4000:
@@ -413,20 +444,21 @@ class MirrorLeechListener:
                 await start_from_queued()
                 return
         else:
-            msg += f'\n<b>💾 Type Files : {mime_type}</b>'
+            msg += f'\n\n<b>Type: </b>{mime_type}'
             if mime_type == "Folder":
-                msg += f'\n<b>🗂 Total Folders : {folders}</b>'
-                msg += f'\n<b>📄 Total Files : {files}</b>'
-            msg += f"\n<b>⏳ Finished : {get_readable_time(time() - self.extra_details['startTime'])}</b>"
-            msg += f"\n<b>✅ Status :- Successfully {self.extra_details['mode']}</b>"
-            msg += f"\n\n<b>👤 By : {self.tag}</b>"   
-            if link or rclonePath and config_dict['RCLONE_SERVE_URL']:
-                if drive_id and config_dict['GDRIVE_ID'] != drive_id:
+                msg += f'\n<b>SubFolders: </b>{folders}'
+                msg += f'\n<b>Files: </b>{files}'
+                try:
+                    drive_id = GoogleDriveHelper.getIdFromUrl(link)
                     msg += f"\n\n<b>Folder id</b>: <code>{drive_id}</code>"
+                except:
+                    pass
+            msg += f'\n\n<b>#cc</b>: {self.tag} | <b>Elapsed</b>: {get_readable_time(time() - self.extra_details["startTime"])}'
+            msg += f"\n\n<b>Upload</b>: {self.extra_details['mode']}"
+            if link or rclonePath and config_dict['RCLONE_SERVE_URL']:
                 buttons = ButtonMaker()
                 if link:
-                    if not config_dict['DISABLE_DRIVE_LINK']:
-                        buttons.ubutton("⚡️ Google Drive ⚡️", link)
+                    buttons.ubutton("🔐 Drive Link", link)
                 else:
                     msg += f'\n\nPath: <code>{rclonePath}</code>'
                 if rclonePath and (RCLONE_SERVE_URL := config_dict['RCLONE_SERVE_URL']):
@@ -435,7 +467,7 @@ class MirrorLeechListener:
                     share_url = f'{RCLONE_SERVE_URL}/{remote}/{url_path}'
                     if mime_type == "Folder":
                         share_url += '/'
-                    buttons.ubutton("☁️ RC Clone ☁️", share_url)
+                    buttons.ubutton("🔗 Rclone Link", share_url)
                 elif not rclonePath:
                     INDEX_URL = self.index_link if self.drive_id else config_dict['INDEX_URL']
                     if INDEX_URL:
@@ -443,12 +475,12 @@ class MirrorLeechListener:
                         share_url = f'{INDEX_URL}/{url_path}'
                         if mime_type == "Folder":
                             share_url += '/'
-                            buttons.ubutton("🔥 Drive IndeX 🔥", share_url)
+                            buttons.ubutton("📁 Index Link", share_url)
                         else:
-                            buttons.ubutton("🔥 Drive IndeX 🔥", share_url)
+                            buttons.ubutton("⚡ Index Link", share_url)
                             if mime_type.startswith(('image', 'video', 'audio')):
                                 share_urls = f'{INDEX_URL}/{url_path}?a=view'
-                                buttons.ubutton("🌐 View Link 🌐", share_urls)
+                                buttons.ubutton("🌐 View Link", share_urls)
                 buttons = extra_btns(buttons)
                 if self.dmMessage:
                     msg += '\n\n<b>Links has been sent in your DM.</b>'
@@ -456,11 +488,9 @@ class MirrorLeechListener:
                     await sendMessage(self.dmMessage, msg, buttons.build_menu(2))
                 else:
                     if self.isSuperGroup and not self.message.chat.has_protected_content:
-                        buttons.ibutton("🤝 Send Me to DM 🤝", 'save', 'footer')
+                        buttons.ibutton("Save This Message", 'save', 'footer')
                     await sendMessage(self.message, msg, buttons.build_menu(2))
                 if self.logMessage:
-                    if link and config_dict['DISABLE_DRIVE_LINK']:
-                        buttons.ubutton("⚡️ Google Drive ⚡️", link, 'header')
                     await sendMessage(self.logMessage, msg, buttons.build_menu(2))
             else:
                 msg += f'\n\nPath: <code>{rclonePath}</code>'
@@ -468,10 +498,10 @@ class MirrorLeechListener:
                 if self.logMessage:
                     await sendMessage(self.logMessage, msg)
             if self.seed and not self.isClone:
-                if self.isZip:
-                    await clean_target(f"{self.dir}/{name}")
-                elif self.newDir:
+                if self.newDir:
                     await clean_target(self.newDir)
+                elif self.compress:
+                    await clean_target(f"{self.dir}/{name}")
                 async with queue_dict_lock:
                     if self.uid in non_queued_up:
                         non_queued_up.remove(self.uid)
@@ -500,9 +530,11 @@ class MirrorLeechListener:
             if self.uid in download_dict.keys():
                 del download_dict[self.uid]
             count = len(download_dict)
-            if self.uid in self.sameDir:
-                self.sameDir.remove(self.uid)
-        msg = f"Hi! {self.tag} {escape(error)}"
+            if self.sameDir and self.uid in self.sameDir['tasks']:
+                self.sameDir['tasks'].remove(self.uid)
+                self.sameDir['total'] -= 1
+        msg = f"{self.tag} Download: {escape(str(error))}\n<b>Elapsed</b>: {get_readable_time(time() - self.extra_details['startTime'])}"
+        msg += f"\n<b>Upload</b>: {self.extra_details['mode']}"
         await sendMessage(self.message, msg, button)
         if self.logMessage:
             await sendMessage(self.logMessage, msg, button)
@@ -543,7 +575,8 @@ class MirrorLeechListener:
             count = len(download_dict)
             if self.uid in self.sameDir:
                 self.sameDir.remove(self.uid)
-        msg = f"Hi! {self.tag} {escape(error)}"
+        msg = f"{self.tag} {escape(str(error))}\n<b>Elapsed</b>: {get_readable_time(time() - self.extra_details['startTime'])}"
+        msg += f"\n<b>Upload</b>: {self.extra_details['mode']}"
         await sendMessage(self.message, msg)
         if self.logMessage:
             await sendMessage(self.logMessage, msg)

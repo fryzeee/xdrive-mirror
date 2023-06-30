@@ -47,7 +47,7 @@ QbTorrents = {}
 list_drives_dict = {}
 shorteneres_list = []
 extra_buttons = {}
-GLOBAL_EXTENSION_FILTER = ['.aria2']
+GLOBAL_EXTENSION_FILTER = ['.aria2', '!qB']
 user_data = {}
 aria2_options = {}
 qbit_options = {}
@@ -179,7 +179,7 @@ USER_SESSION_STRING = environ.get('USER_SESSION_STRING', '')
 if len(USER_SESSION_STRING) != 0:
     log_info("Creating client from USER_SESSION_STRING")
     user = tgClient('user', TELEGRAM_API, TELEGRAM_HASH, session_string=USER_SESSION_STRING,
-                    parse_mode=enums.ParseMode.HTML, no_updates=True, max_concurrent_transmissions=1000).start()
+                    parse_mode=enums.ParseMode.HTML, max_concurrent_transmissions=1000).start()
     if user.me.is_bot:
         log_warning(
             "You added bot string for USER_SESSION_STRING this is not allowed! Exiting now")
@@ -367,8 +367,6 @@ ENABLE_MESSAGE_FILTER = ENABLE_MESSAGE_FILTER.lower() == 'true'
 STOP_DUPLICATE_TASKS = environ.get('STOP_DUPLICATE_TASKS', '')
 STOP_DUPLICATE_TASKS = STOP_DUPLICATE_TASKS.lower() == 'true'
 
-DISABLE_DRIVE_LINK = environ.get('DISABLE_DRIVE_LINK', '')
-DISABLE_DRIVE_LINK = DISABLE_DRIVE_LINK.lower() == 'true'
 
 DISABLE_LEECH = environ.get('DISABLE_LEECH', '')
 DISABLE_LEECH = DISABLE_LEECH.lower() == 'true'
@@ -464,7 +462,6 @@ config_dict = {
     "LEECH_LIMIT": LEECH_LIMIT,
     "ENABLE_MESSAGE_FILTER": ENABLE_MESSAGE_FILTER,
     "STOP_DUPLICATE_TASKS": STOP_DUPLICATE_TASKS,
-    "DISABLE_DRIVE_LINK": DISABLE_DRIVE_LINK,
     "SET_COMMANDS": SET_COMMANDS,
     "DISABLE_LEECH": DISABLE_LEECH,
     "REQUEST_LIMITS": REQUEST_LIMITS,
@@ -604,7 +601,7 @@ else:
     qb_client.app_set_preferences(qb_opt)
 
 log_info("Creating client from BOT_TOKEN")
-bot = tgClient('bot', TELEGRAM_API, TELEGRAM_HASH, bot_token=BOT_TOKEN,
+bot = tgClient('bot', TELEGRAM_API, TELEGRAM_HASH, bot_token=BOT_TOKEN, workers=1000,
                parse_mode=enums.ParseMode.HTML, max_concurrent_transmissions=1000).start()
 bot_loop = bot.loop
 bot_name = bot.me.username

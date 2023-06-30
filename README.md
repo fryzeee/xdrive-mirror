@@ -1,4 +1,4 @@
-This is a Telegram Bot written in Python for mirroring files on the Internet to your Google Drive or Telegram. Based on [python-aria-mirror-bot](https://github.com/lzzy12/python-aria-mirror-bot)
+This is a Telegram Bot written in Python for mirroring files on the Internet to your Google Drive, Telegram or to any rclone supported cloud. Based on [python-aria-mirror-bot](https://github.com/lzzy12/python-aria-mirror-bot)
 
 # Features
 
@@ -23,7 +23,7 @@ In each single file there is a major change from base code, it's almost totaly d
 - Fix all download listener functions and status
 - Edit Global Options while bot running from bot settings
 
-### Leech
+### TG Upload/Download
 
 - Leech support
 - Splitting
@@ -34,10 +34,12 @@ In each single file there is a major change from base code, it's almost totaly d
 - Upload all files to specific superGroup/channel.
 - Leech Split size and equal split size settings for each user
 - Ability to leech splitted file parts in media group. Setting for each user
+- Download using premium account if available
+- Download restricted messages (document or link) by tg private/public/super links
 
 ### Google
 
-- Stop duplicates for all tasks except yt-dlp tasks
+- Stop duplicates for all tasks
 - Download from Google Drive
 - Counting Google Drive files/folders
 - Search in multiple Drive folder/TeamDrive
@@ -100,7 +102,7 @@ In each single file there is a major change from base code, it's almost totaly d
 
 ### Rclone
 
-- Download and Upload using rclone with and without service accounts
+- Download and Upload using rclone with and without random service accounts
 - Ability to choose config, remote and path from list with buttons
 - Ability to set rclone flags for each task or globally from config
 - Rclone.conf for each user
@@ -122,6 +124,8 @@ In each single file there is a major change from base code, it's almost totaly d
 - View Link button. Extra button to open index link in broswer instead of direct download for file
 - Queueing System for all tasks
 - Ability to zip/unzip multi links in same directory. Mostly helpful in unziping tg file parts
+- Bulk download from telegram txt file or text message contains links seperated by new line
+- Join splitted files that have splitted before by split linux pkg
 - Almost all repository functions have been improved and many other details can't mention all of them
 - Many bugs have been fixed
 
@@ -246,7 +250,7 @@ Fill up rest of the fields. Meaning of each field is discussed below. **NOTE**: 
 - `EXTENSION_FILTER`: File extensions that won't upload/clone. Separate them by space. `Str`
 - `INCOMPLETE_TASK_NOTIFIER`: Get incomplete task messages after restart. Require database and superGroup. Default is `False`. `Bool`
 - `UPTOBOX_TOKEN`: Uptobox token to mirror uptobox links. Get it from [Uptobox Premium Account](https://uptobox.com/my_account). `str`
-- `YT_DLP_OPTIONS`: Default yt-dlp options. Check all possible options [HERE](https://github.com/yt-dlp/yt-dlp/blob/master/yt_dlp/YoutubeDL.py#L184) or use this [script](https://t.me/mltb_official/177) to convert cli arguments to api options. Format: key:value|key:value|key:value. Add `^` before integer or float, some numbers must be numeric and some string. `str`
+- `YT_DLP_OPTIONS`: Default yt-dlp options. Check all possible options [HERE](https://github.com/yt-dlp/yt-dlp/blob/master/yt_dlp/YoutubeDL.py#L184) or use this [script](https://t.me/mltb_official_channel/177) to convert cli arguments to api options. Format: key:value|key:value|key:value. Add `^` before integer or float, some numbers must be numeric and some string. `str`
   - Example: "format:bv*+mergeall[vcodec=none]|nocheckcertificate:True"
 - `USE_SERVICE_ACCOUNTS`: Whether to use Service Accounts or not, with google-api-python-client. For this to work see [Using Service Accounts](#generate-service-accounts-what-is-service-account) section below. Default is `False`. `Bool`
 
@@ -259,7 +263,7 @@ Fill up rest of the fields. Meaning of each field is discussed below. **NOTE**: 
 
 ### Rclone
 
-- `RCLONE_PATH`: Default rclone path to which you want to upload all the mirrors using rclone. `Str`
+- `RCLONE_PATH`: Default rclone path to which you want to upload all the files/folders using rclone. `Str`
 - `RCLONE_FLAGS`: key:value|key|key|key:value . Check here all [RcloneFlags](https://rclone.org/flags/). `Str`
 - `RCLONE_SERVE_URL`: Valid URL where the bot is deployed to use rclone serve. Format of URL should be `http://myip`, where `myip` is the IP/Domain(public) of your bot or if you have chosen port other than `80` so write it in this format `http://myip:port` (`http` and not `https`). `Str`
 - `RCLONE_SERVE_PORT`: Which is the **RCLONE_SERVE_URL** Port. Default is `8080`. `Int`
@@ -336,9 +340,8 @@ Fill up rest of the fields. Meaning of each field is discussed below. **NOTE**: 
 - `ENABLE_MESSAGE_FILTER`: If enabled then bot will not download files with captions or forwarded. `Bool`
 - `STOP_DUPLICATE_TASKS`: To enable stop duplicate task across multiple bots. `Bool`
   - **Note**: All bot must have added same database link.
-- `DISABLE_DRIVE_LINK`: To disable google drive link button in case you need it. `Bool`
 - `TOKEN_TIMEOUT`: Token timeout for each group member in sec. `Int`
-  - **Note**: This token system is linked with url shortners, users will have to go through ads to use bot commands (if `shorteners.txt` added, Read more about shortners.txt [Here](https://github.com/junedkh/jmdkh-mltb#multi-shortener) ).
+  - **Note**: This token system is linked with url shortners, users will have to go through ads to use bot commands (if `shorteners.txt` added, Read more about shorteners.txt [Here](https://github.com/junedkh/jmdkh-mltb#multi-shortener) ).
 
 ### Extra Features
 
@@ -469,23 +472,15 @@ sudo docker image prune -a
 
 ```
 mirror - or /m Mirror
-zipmirror - or /zm Mirror and upload as zip
-unzipmirror - or /uzm Mirror and extract files
 qbmirror - or /qm Mirror torrent using qBittorrent
-qbzipmirror - or /qzm Mirror torrent using qb and upload as zip
-qbunzipmirror - or /quzm Mirror torrent using qb and extract files
 leech - or /l Leech
-zipleech - or /zl Leech and upload as zip
-unzipleech - or /uzl Leech and extract files
 qbleech - or /ql Leech torrent using qBittorrent
-qbzipleech - or /qzl Leech torrent using qb and upload as zip
-qbunzipleech - or /quzl Leech torrent using qb and extract
 clone - Copy file/folder to Drive
 count - Count file/folder from Drive
 ytdl - or /y Mirror yt-dlp supported link
-ytdlzip - or /yz Mirror yt-dlp supported link as zip
 ytdlleech - or /yl Leech through yt-dlp supported link
-ytdlzipleech - or /yzl Leech yt-dlp support link as zip
+clone - Copy file/folder to Drive
+count - Count file/folder from Drive
 usetting - User settings
 status - Get Mirror Status message
 btsel - Select files from torrent
@@ -561,8 +556,7 @@ python3 generate_drive_token.py
 
 ## Bittorrent Seed
 
-- Add `d:ratio:time` prefix along with leech or mirror cmd.
-- Using `d` prefix alone will lead to use global options for aria2c or qbittorrent.
+- Using `-d` argument alone will lead to use global options for aria2c or qbittorrent.
 
 ### Qbittorrent
 
@@ -792,14 +786,18 @@ Where host is the name of extractor (eg. instagram, Twitch). Multiple accounts o
 
 <p> If you feel like showing your appreciation for this project by Anas, then how about buying me a coffee. for Anas</p>
 
-[!["Buy for Anas"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/anasty17)
+[!["Buy Me A Coffee"](https://storage.ko-fi.com/cdn/kofi2.png)](https://ko-fi.com/anasty17)
+
+Binance ID:
+
+```
+52187862
+```
 
 USDT Address: `TEzjjfkxLKQqndpsdpkA7jgiX7QQCL5p4f` Network: `TRC20`
 
 BTC Addrese: `17dkvxjqdc3yiaTs6dpjUB1TjV3tD7ScWe`
 
 ETH Address: `0xf798a8a1c72d593e16d8f3bb619ebd1a093c7309`
-
-UPI: `mltb-official@ybl`,`mltb-official@ibl`,`mltb-official@axl`
 
 -----

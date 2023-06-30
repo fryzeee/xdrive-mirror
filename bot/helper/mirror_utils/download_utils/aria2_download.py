@@ -71,7 +71,7 @@ async def add_aria2c_download(link, path, listener, filename, auth, ratio, seed_
         if not added_to_queue:
             await sync_to_async(aria2.client.force_pause, gid)
         SBUTTONS = bt_selection_buttons(gid)
-        msg = "Your Download Paused. Choose Files & Press Done Selecting Button to Start Downloading."
+        msg = "Your download paused. Choose files then press Done Selecting button to start downloading."
         await sendMessage(listener.message, msg, SBUTTONS)
 
     if added_to_queue:

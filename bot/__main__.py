@@ -4,6 +4,7 @@ from os import execl as osexecl
 from signal import SIGINT, signal
 from sys import executable
 from time import time
+from uuid import uuid4
 
 from aiofiles import open as aiopen
 from aiofiles.os import path as aiopath
@@ -12,11 +13,10 @@ from psutil import (boot_time, cpu_count, cpu_percent, disk_usage,
                     net_io_counters, swap_memory, virtual_memory)
 from pyrogram.filters import command
 from pyrogram.handlers import MessageHandler
-from uuid import uuid4
+
 from bot import (DATABASE_URL, INCOMPLETE_TASK_NOTIFIER, LOGGER,
                  STOP_DUPLICATE_TASKS, Interval, QbInterval, bot, botStartTime,
-                 user_data,
-                 config_dict, scheduler)
+                 config_dict, scheduler, user_data)
 from bot.helper.listeners.aria2_listener import start_aria2_listener
 
 from .helper.ext_utils.bot_utils import (cmd_exec, get_readable_file_size,
@@ -34,10 +34,8 @@ from .modules import (anonymous, authorize, bot_settings, cancel_mirror,
                       save_message, shell, status, torrent_search,
                       torrent_select, users_settings, ytdlp)
 
-start_aria2_listener()
 
-
-async def stats(client, message):
+async def stats(_, message):
     total, used, free, disk = disk_usage('/')
     swap = swap_memory()
     memory = virtual_memory()
@@ -47,29 +45,26 @@ async def stats(client, message):
         last_commit = last_commit[0]
     else:
         last_commit = 'No UPSTREAM_REPO'
-    stats = f'<b>📊 Time Calculation 📊</b>\n\n'\
-            f'<b>⏰ Bot Uptime : {get_readable_time(time() - botStartTime)}</b>\n'\
-            f'<b>🖥 OS Uptime : {get_readable_time(time() - boot_time())}</b>\n\n'\
-			f'<b>📊 Data Usage  📊</b>\n\n'\
-            f'<b>🗃 Storage : {get_readable_file_size(total)}</b>\n'\
-            f'<b>📈 Used : {get_readable_file_size(used)}</b> | <b>📉 Free : {get_readable_file_size(free)}</b>\n'\
-            f'<b>📤 Upload : {get_readable_file_size(net_io_counters().bytes_sent)}</b>\n'\
-            f'<b>📥 Download : {get_readable_file_size(net_io_counters().bytes_recv)}</b>\n\n'\
-			f'<b>📊 Performance Meter 📊</b>\n\n'\
-            f'<b>🖥 CPU : {cpu_percent(interval=0.5)}%</b>\n'\
-            f'<b>⚙️ RAM : {memory.percent}%</b>\n'\
-            f'<b>🗃 DISK : {disk}%</b>\n'\
-            f'<b>🪅 Physical Cores : {cpu_count(logical=False)}</b>\n'\
-            f'<b>🎛 Total Cores : {cpu_count(logical=True)}</b>\n'\
-            f'<b>🛡 Swap Memory : {get_readable_file_size(swap.total)}</b> | <b>⏳ Used : {swap.percent}%</b>\n'\
-            f'<b>💽 Memory Total : {get_readable_file_size(memory.total)}</b>\n'\
-            f'<b>📉 Memory Free : {get_readable_file_size(memory.available)}</b>\n'\
-            f'<b>📈 Memory Used : {get_readable_file_size(memory.used)}</b>\n'
+    stats = f'<b>Commit Date</b>: {last_commit}\n\n'\
+            f'<b>Bot Uptime</b>: {get_readable_time(time() - botStartTime)}\n'\
+            f'<b>OS Uptime</b>: {get_readable_time(time() - boot_time())}\n\n'\
+            f'<b>Total Disk Space </b>: {get_readable_file_size(total)}\n'\
+            f'<b>Used</b>: {get_readable_file_size(used)} | <b>Free</b>: {get_readable_file_size(free)}\n\n'\
+            f'<b>Upload</b>: {get_readable_file_size(net_io.bytes_sent)}\n'\
+            f'<b>Download</b>: {get_readable_file_size(net_io.bytes_recv)}\n\n'\
+            f'<b>CPU</b>: {cpu_percent(interval=0.5)}%\n'\
+            f'<b>RAM</b>: {memory.percent}%\n'\
+            f'<b>DISK</b>: {disk}%\n\n'\
+            f'<b>Physical Cores</b>: {cpu_count(logical=False)}\n'\
+            f'<b>Total Cores</b>: {cpu_count(logical=True)}\n\n'\
+            f'<b>SWAP</b>: {get_readable_file_size(swap.total)} | <b>Used</b>: {swap.percent}%\n'\
+            f'<b>Memory Total</b>: {get_readable_file_size(memory.total)}\n'\
+            f'<b>Memory Free</b>: {get_readable_file_size(memory.available)}\n'\
+            f'<b>Memory Used</b>: {get_readable_file_size(memory.used)}\n'
     await sendMessage(message, stats)
 
 
-
-async def start(client, message):
+async def start(_, message):
     if len(message.command) > 1:
         userid = message.from_user.id
         input_token = message.command[1]
@@ -92,7 +87,7 @@ async def start(client, message):
     await sendMessage(message, start_string)
 
 
-async def restart(client, message):
+async def restart(_, message):
     restart_message = await sendMessage(message, "Restarting...")
     if scheduler.running:
         scheduler.shutdown(wait=False)
@@ -108,34 +103,24 @@ async def restart(client, message):
     osexecl(executable, executable, "-m", "bot")
 
 
-async def ping(client, message):
+async def ping(_, message):
     start_time = int(round(time() * 1000))
     reply = await sendMessage(message, "Starting Ping")
     end_time = int(round(time() * 1000))
     await editMessage(reply, f'{end_time - start_time} ms')
 
 
-async def log(client, message):
+async def log(_, message):
     await sendFile(message, 'log.txt')
 
 help_string = f'''
 NOTE: Try each command without any argument to see more detalis.
 /{BotCommands.MirrorCommand[0]} or /{BotCommands.MirrorCommand[1]}: Start mirroring to Google Drive.
-/{BotCommands.ZipMirrorCommand[0]} or /{BotCommands.ZipMirrorCommand[1]}: Start mirroring and upload the file/folder compressed with zip extension.
-/{BotCommands.UnzipMirrorCommand[0]} or /{BotCommands.UnzipMirrorCommand[1]}: Start mirroring and upload the file/folder extracted from any archive extension.
 /{BotCommands.QbMirrorCommand[0]} or /{BotCommands.QbMirrorCommand[1]}: Start Mirroring to Google Drive using qBittorrent.
-/{BotCommands.QbZipMirrorCommand[0]} or /{BotCommands.QbZipMirrorCommand[1]}: Start mirroring using qBittorrent and upload the file/folder compressed with zip extension.
-/{BotCommands.QbUnzipMirrorCommand[0]} or /{BotCommands.QbUnzipMirrorCommand[1]}: Start mirroring using qBittorrent and upload the file/folder extracted from any archive extension.
 /{BotCommands.YtdlCommand[0]} or /{BotCommands.YtdlCommand[1]}: Mirror yt-dlp supported link.
-/{BotCommands.YtdlZipCommand[0]} or /{BotCommands.YtdlZipCommand[1]}: Mirror yt-dlp supported link as zip.
 /{BotCommands.LeechCommand[0]} or /{BotCommands.LeechCommand[1]}: Start leeching to Telegram.
-/{BotCommands.ZipLeechCommand[0]} or /{BotCommands.ZipLeechCommand[1]}: Start leeching and upload the file/folder compressed with zip extension.
-/{BotCommands.UnzipLeechCommand[0]} or /{BotCommands.UnzipLeechCommand[1]}: Start leeching and upload the file/folder extracted from any archive extension.
 /{BotCommands.QbLeechCommand[0]} or /{BotCommands.QbLeechCommand[1]}: Start leeching using qBittorrent.
-/{BotCommands.QbZipLeechCommand[0]} or /{BotCommands.QbZipLeechCommand[1]}: Start leeching using qBittorrent and upload the file/folder compressed with zip extension.
-/{BotCommands.QbUnzipLeechCommand[0]} or /{BotCommands.QbUnzipLeechCommand[1]}: Start leeching using qBittorrent and upload the file/folder extracted from any archive extension.
 /{BotCommands.YtdlLeechCommand[0]} or /{BotCommands.YtdlLeechCommand[1]}: Leech yt-dlp supported link.
-/{BotCommands.YtdlZipLeechCommand[0]} or /{BotCommands.YtdlZipLeechCommand[1]}: Leech yt-dlp supported link as zip.
 /{BotCommands.CloneCommand} [drive_url]: Copy file/folder to Google Drive.
 /{BotCommands.CountCommand} [drive_url]: Count file/folder of Google Drive.
 /{BotCommands.DeleteCommand} [drive_url]: Delete file/folder from Google Drive (Only Owner & Sudo).
@@ -167,7 +152,7 @@ NOTE: Try each command without any argument to see more detalis.
 '''
 
 
-async def bot_help(client, message):
+async def bot_help(_, message):
     await sendMessage(message, help_string)
 
 
@@ -217,6 +202,7 @@ async def restart_notification():
 
 async def main():
     await gather(start_cleanup(), torrent_search.initiate_search_tools(), restart_notification(), set_commands(bot))
+    await sync_to_async(start_aria2_listener, wait=False)
 
     bot.add_handler(MessageHandler(
         start, filters=command(BotCommands.StartCommand)))
