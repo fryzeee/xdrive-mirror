@@ -79,7 +79,7 @@ async def removeSudo(_, message):
             await DbManger().update_user_data(id_)
         msg = 'Demoted'
     else:
-        msg = "Give Telegram ID or Reply to Someone Message""
+        msg = "Give Telegram ID or Reply to Someone Message"
     await sendMessage(message, msg)
 
 bot.add_handler(MessageHandler(authorize, filters=command(
