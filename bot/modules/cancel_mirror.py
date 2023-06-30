@@ -25,22 +25,21 @@ async def cancel_mirror(client, message):
         gid = msg[1]
         dl = await getDownloadByGid(gid)
         if not dl:
-            await sendMessage(message, f"GID: <code>{gid}</code> Not Found.")
+            await sendMessage(message, f"🚫 GID : <code>{gid}</code> Not Found 🚫")
             return
     elif reply_to_id := message.reply_to_message_id:
         async with download_dict_lock:
             dl = download_dict.get(reply_to_id, None)
         if not dl:
-            await sendMessage(message, "This is not an active task!")
+            await sendMessage(message, "🚫 Not Active Task 🚫")
             return
     elif len(msg) == 1:
-        msg = f"Reply to an active Command message which was used to start the download" \
-              f" or send <code>/{BotCommands.CancelMirror} GID</code> to cancel it!"
+        msg = f"🚫 Send <code>/{BotCommands.CancelMirror} GID</code> to Cancel Your Download 🚫"
         await sendMessage(message, msg)
         return
 
     if not await CustomFilters.sudo(client, message) and dl.message.from_user.id != user_id:
-        await sendMessage(message, "This task is not for you!")
+        await sendMessage(message, "🚫 Not For You 🚫")
         return
     obj = dl.download()
     await obj.cancel_download()

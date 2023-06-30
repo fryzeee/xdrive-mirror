@@ -20,12 +20,12 @@ from bot.helper.telegram_helper.message_utils import (anno_checker,
 
 async def list_buttons(user_id, isRecursive=True):
     buttons = ButtonMaker()
-    buttons.ibutton("Folders", f"list_types {user_id} folders {isRecursive}")
-    buttons.ibutton("Files", f"list_types {user_id} files {isRecursive}")
-    buttons.ibutton("Both", f"list_types {user_id} both {isRecursive}")
-    buttons.ibutton(f"Recursive: {isRecursive}",
+    buttons.ibutton("🗂 Folders 🗂", f"list_types {user_id} folders {isRecursive}")
+    buttons.ibutton("📄 Files 📄", f"list_types {user_id} files {isRecursive}")
+    buttons.ibutton("👍 Both 👍", f"list_types {user_id} both {isRecursive}")
+    buttons.ibutton(f"💡 Recursive 💡: {isRecursive}",
                     f"list_types {user_id} rec {isRecursive}")
-    buttons.ibutton("Cancel", f"list_types {user_id} cancel")
+    buttons.ibutton("🚫 Cancel 🚫", f"list_types {user_id} cancel")
     return buttons.build_menu(2)
 
 
@@ -41,10 +41,10 @@ async def _list_drive(key, message, item_type, isRecursive):
         except Exception as e:
             await editMessage(message, e)
             return
-        msg = f'<b>Found {contents_no} result for <i>{key}</i></b>\n\n<b>Type</b>: {item_type} | <b>Recursive list</b>: {isRecursive}\n<b>Elapsed</b>: {Elapsed}'
+        msg = f'<b>Found {contents_no} Result For <i>{key}</i></b>\n\n<b>💡 Type : {item_type}\n<b>💡 Recursive : {isRecursive}</b>'
         await editMessage(message, msg, button)
     else:
-        msg = f'No result found for <i>{key}</i>\n\n<b>Type</b>: {item_type} | <b>Recursive list</b>: {isRecursive}\n<b>Elapsed</b>: {Elapsed}'
+        msg = f'<b>No Result Found For <i>{key}</i></b>\n\n<b>💡 Type : {item_type}</b>\n<b>💡 Recursive : {isRecursive}</b>'
         await editMessage(message, msg)
 
 
@@ -55,25 +55,25 @@ async def select_type(_, query):
     key = message.reply_to_message.text.split(maxsplit=1)[1].strip()
     data = query.data.split()
     if user_id != int(data[1]):
-        return await query.answer(text="Not Yours!", show_alert=True)
+        return await query.answer(text="Not Yours", show_alert=True)
     elif data[2] == 'rec':
         await query.answer()
         isRecursive = not bool(eval(data[3]))
         buttons = await list_buttons(user_id, isRecursive)
-        return await editMessage(message, 'Choose list options:', buttons)
+        return await editMessage(message, '📍 Choose Options :', buttons)
     elif data[2] == 'cancel':
         await query.answer()
-        return await editMessage(message, "list has been canceled!")
+        return await editMessage(message, "🚫 Canceled 🚫")
     await query.answer()
     item_type = data[2]
     isRecursive = eval(data[3])
-    await editMessage(message, f"<b>Searching for <i>{key}</i></b>")
+    await editMessage(message, f"<b>🔎 Searching For <i>{key}</i></b>")
     await _list_drive(key, message, item_type, isRecursive)
 
 
 async def drive_list(_, message):
     if len(message.text.split()) == 1:
-        return await sendMessage(message, 'Send a search key along with command')
+        return await sendMessage(message, '🚫 Send Me a Keyword 🚫')
     if not message.from_user:
         message.from_user = await anno_checker(message)
     if not message.from_user:
@@ -88,7 +88,7 @@ async def drive_list(_, message):
                 await sendMessage(message, msg, btn.build_menu(1))
                 return
     buttons = await list_buttons(user_id)
-    await sendMessage(message, 'Choose list options:', buttons)
+    await sendMessage(message, '📍 Choose Options :', buttons)
 
 bot.add_handler(MessageHandler(drive_list, filters=command(
     BotCommands.ListCommand) & CustomFilters.authorized))

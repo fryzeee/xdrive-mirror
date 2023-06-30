@@ -181,7 +181,7 @@ class GoogleDriveHelper:
         msg = ''
         try:
             self.__service.files().delete(fileId=file_id, supportsAllDrives=True).execute()
-            msg = "Successfully deleted"
+            msg = "✅ Successfully Deleted ✅"
             LOGGER.info(f"Delete Result: {msg}")
         except HttpError as err:
             if "File not found" in str(err) or "insufficientFilePermissions" in str(err):
@@ -418,7 +418,7 @@ class GoogleDriveHelper:
                 err = err.last_attempt.exception()
             err = str(err).replace('>', '').replace('<', '')
             if "User rate limit exceeded" in err:
-                msg = "User rate limit exceeded."
+                msg = "The Download/Clone Quota For This File Has Been Exceeded"
             elif "File not found" in err:
                 if not self.__alt_auth:
                     token_service = self.__alt_authorize()
@@ -589,7 +589,7 @@ class GoogleDriveHelper:
                 mime_type = file.get('mimeType')
                 if mime_type == "application/vnd.google-apps.folder":
                     furl = f"https://drive.google.com/drive/folders/{file.get('id')}"
-                    msg += f"📁 <code>{file.get('name')}<br>(folder)</code><br>"
+                    msg += f"📁 File Name : <code>{file.get('name')}</code><br>📥 Total Size : -<br>⚙️ Type Files : Folder / 📁<br>🔗 Link :-<br>"
                     msg += f"<b><a href={furl}>Drive Link</a></b> | "
                     if index_url:
                         if isRecur:
@@ -605,7 +605,7 @@ class GoogleDriveHelper:
                         f"</a> (shortcut)"
                 else:
                     furl = f"https://drive.google.com/uc?id={file.get('id')}&export=download"
-                    msg += f"📄 <code>{file.get('name')}<br>({get_readable_file_size(int(file.get('size', 0)))})</code><br>"
+                    msg += f"📄 File Name : <code>{file.get('name')}</code><br>📥 Total Size : ({get_readable_file_size(int(file.get('size', 0)))})<br>⚙️ Type Files : File - 📄<br>🔗 Link :-<br>"
                     msg += f"<b><a href={furl}>Drive Link</a></b> | "
                     if index_url:
                         if isRecur:

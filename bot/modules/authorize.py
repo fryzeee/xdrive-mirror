@@ -42,7 +42,7 @@ async def unauthorize(_, message):
             await DbManger().update_user_data(id_)
         msg = 'Unauthorized'
     else:
-        msg = 'Already Unauthorized!'
+        msg = 'Already Unauthorized'
     await sendMessage(message, msg)
 
 
@@ -55,14 +55,14 @@ async def addSudo(_, message):
         id_ = reply_to.from_user.id
     if id_:
         if id_ in user_data and user_data[id_].get('is_sudo'):
-            msg = 'Already Sudo!'
+            msg = 'Already Sudo'
         else:
             update_user_ldata(id_, 'is_sudo', True)
             if DATABASE_URL:
                 await DbManger().update_user_data(id_)
             msg = 'Promoted as Sudo'
     else:
-        msg = "Give ID or Reply To message of whom you want to Promote."
+        msg = "Give Telegram ID or Reply to Someone Message"
     await sendMessage(message, msg)
 
 
@@ -79,7 +79,7 @@ async def removeSudo(_, message):
             await DbManger().update_user_data(id_)
         msg = 'Demoted'
     else:
-        msg = "Give ID or Reply To message of whom you want to remove from Sudo"
+        msg = "Give Telegram ID or Reply to Someone Message""
     await sendMessage(message, msg)
 
 bot.add_handler(MessageHandler(authorize, filters=command(

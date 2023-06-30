@@ -29,7 +29,7 @@ async def countNode(_, message):
         link = reply_to.text.split(maxsplit=1)[0].strip()
 
     if is_gdrive_link(link):
-        msg = await sendMessage(message, f"Counting: <code>{link}</code>")
+        msg = await sendMessage(message, f"🧬 Counting : <code>{link}</code>")
         gd = GoogleDriveHelper()
         start_time = time()
         name, mime_type, size, files, folders = await sync_to_async(gd.count, link)
@@ -38,15 +38,16 @@ async def countNode(_, message):
             await sendMessage(message, name)
             return
         await deleteMessage(msg)
-        msg = f'<b>Name</b>: <code>{name}</code>'
-        msg += f'\n\n<b>Size</b>: {get_readable_file_size(size)}'
-        msg += f'\n\n<b>Type</b>: {mime_type}'
+        msg = f'<b>📂 File Name :</b> <code>{name}</code>'
+        msg += f'\n<b>📥 Total Size : {get_readable_file_size(size)}</b>'
+        msg += f'\n<b>💾 Type Files : {mime_type}</b>'
         if mime_type == 'Folder':
-            msg += f'\n<b>SubFolders</b>: {folders}'
-            msg += f'\n<b>Files</b>: {files}'
-        msg += f'\n\n<b>cc</b>: {tag} | <b>Elapsed</b>: {get_readable_time(elapsed)}'
+            msg += f'\n<b>🗂 Total Folders : {folders}</b>'
+            msg += f'\n<b>📄 Total Files : {files}</b>'
+            msg += f"\n<b>⏳ Elapsed : {get_readable_time(elapsed)}</b>"
+            msg += f"\n\n<b>👤 By : {tag}</b>"
     else:
-        msg = 'Send Gdrive link along with command or by replying to the link by command'
+        msg = '🚫 Send Me Google Drive Shareable Link 🚫'
 
     await sendMessage(message, msg)
 
