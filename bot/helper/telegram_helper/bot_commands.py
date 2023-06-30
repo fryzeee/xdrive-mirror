@@ -4,27 +4,27 @@ from bot import CMD_SUFFIX
 class _BotCommands:
     def __init__(self):
         self.StartCommand = 'start'
-        self.MirrorCommand = [f'mirror{CMD_SUFFIX}', f'm{CMD_SUFFIX}']
-        self.QbMirrorCommand = [f'qbmirror{CMD_SUFFIX}', f'qm{CMD_SUFFIX}']
-        self.YtdlCommand = [f'ytdl{CMD_SUFFIX}', f'y{CMD_SUFFIX}']
-        self.LeechCommand = [f'leech{CMD_SUFFIX}', f'l{CMD_SUFFIX}']
-        self.QbLeechCommand = [f'qbleech{CMD_SUFFIX}', f'ql{CMD_SUFFIX}']
-        self.YtdlLeechCommand = [f'ytdlleech{CMD_SUFFIX}', f'yl{CMD_SUFFIX}']
+        self.MirrorCommand = f'mirror{CMD_SUFFIX}'
+        self.QbMirrorCommand = f'qbmirror{CMD_SUFFIX}'
+        self.YtdlCommand = f'ytdl{CMD_SUFFIX}'
+        self.LeechCommand = f'leech{CMD_SUFFIX}'
+        self.QbLeechCommand = f'qbleech{CMD_SUFFIX}'
+        self.YtdlLeechCommand = f'ytdlleech{CMD_SUFFIX}'
         self.CloneCommand = f'clone{CMD_SUFFIX}'
         self.CountCommand = f'count{CMD_SUFFIX}'
         self.DeleteCommand = f'del{CMD_SUFFIX}'
         self.CancelMirror = f'cancel{CMD_SUFFIX}'
-        self.CancelAllCommand = [f'cancelall{CMD_SUFFIX}', 'cancelallbot']
+        self.CancelAllCommand = f'cancelall{CMD_SUFFIX}'
         self.ListCommand = f'list{CMD_SUFFIX}'
         self.SearchCommand = f'search{CMD_SUFFIX}'
-        self.StatusCommand = [f'status{CMD_SUFFIX}', f's{CMD_SUFFIX}', 'sall']
+        self.StatusCommand = f'status{CMD_SUFFIX}'
         self.UsersCommand = f'users{CMD_SUFFIX}'
         self.AuthorizeCommand = f'authorize{CMD_SUFFIX}'
         self.UnAuthorizeCommand = f'unauthorize{CMD_SUFFIX}'
         self.AddSudoCommand = f'addsudo{CMD_SUFFIX}'
         self.RmSudoCommand = f'rmsudo{CMD_SUFFIX}'
-        self.PingCommand = ['ping', 'p']
-        self.RestartCommand = [f'restart{CMD_SUFFIX}', 'restartall']
+        self.PingCommand = ['ping']
+        self.RestartCommand = f'restart{CMD_SUFFIX}'
         self.StatsCommand = f'stats{CMD_SUFFIX}'
         self.HelpCommand = f'help{CMD_SUFFIX}'
         self.LogCommand = f'log{CMD_SUFFIX}'
