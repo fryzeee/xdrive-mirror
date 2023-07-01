@@ -107,7 +107,7 @@ _____________________________________
 <b>-s = Selection File</b>
 <b>-d = Seeding File</b>
 <b>Example :</b>
-<b>- For Selection Files<b>
+<b>- For Selection Files</b>
 <code>/qbmirror1 -s https://yts.mx/torrent/download/063A8D1602B018CEF86F34FF540D69D29F46CBBA</code>
 
 <b>- For Seeding Files</b>
@@ -154,6 +154,11 @@ drive_id must be folder id and index must be url else it will not accept
 <code>/{cmd}</code> (rcl or rclone_path) -up (rcl or rclone_path) -rcf flagkey:flagvalue|flagkey|flagkey:flagvalue
 
 Note: If -up not specified then rclone destination will be the RCLONE_PATH from config.env
+"""
+
+
+LECH_HELP_MESSAGE = """
+TEST TEST TEST
 """
 
 CATEGORY_HELP_MESSAGE = """
