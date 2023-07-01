@@ -156,11 +156,6 @@ drive_id must be folder id and index must be url else it will not accept
 Note: If -up not specified then rclone destination will be the RCLONE_PATH from config.env
 """
 
-
-LEECH_HELP_MESSAGE = """
-TEST TEST TEST
-"""
-
 CATEGORY_HELP_MESSAGE = """
 Reply to an active /{cmd} which was used to start the download or add gid along with {cmd}
 This command mainly for change category incase you decided to change category from already added download.
