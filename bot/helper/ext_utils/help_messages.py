@@ -108,10 +108,10 @@ _____________________________________
 <b>-d = Seeding File</b>
 <b>Example :</b>
 <b>- For Selection Files</b>
-<code>/qbmirror1 -s https://yts.mx/torrent/download/063A8D1602B018CEF86F34FF540D69D29F46CBBA</code>
+<code>/qbmirror1 https://yts.mx/torrent/download/063A8D1602B018CEF86F34FF540D69D29F46CBBA -s</code>
 
 <b>- For Seeding Files</b>
-<code>/qbmirror1 -d https://yts.mx/torrent/download/063A8D1602B018CEF86F34FF540D69D29F46CBBA</code>
+<code>/qbmirror1 https://yts.mx/torrent/download/063A8D1602B018CEF86F34FF540D69D29F46CBBA -d</code>
 """
 
 RSS_HELP_MESSAGE = """
