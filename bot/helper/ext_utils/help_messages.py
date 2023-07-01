@@ -67,42 +67,51 @@ Check all yt-dlp api options from this <a href='https://github.com/yt-dlp/yt-dlp
 
 MIRROR_HELP_MESSAGE = """
 <b>🚩How to Mirror ?</b>
-<code>/{cmd}</code> [Link]
+<code>/mirror1</code> [Link]
 <b>Example :</b>
-<code>/{cmd} https://sourceforge.net/projects/opengapps/files/arm64/20220215/open_gapps-arm64-11.0-pico-20220215.zip/download</code>
+<code>/mirror1 https://sourceforge.net/projects/opengapps/files/arm64/20220215/open_gapps-arm64-11.0-pico-20220215.zip/download</code>
 
 <b>🚩How to Mirror With Custom Name?</b>
-<code>/{cmd}</code> [Link] -n [New Name]
+<code>/mirror1</code> [Link] -n [New Name]
 <b>Note : Add -n After Your Link</b>
 <b>Example :</b>
-<code>/{cmd} https://sourceforge.net/projects/opengapps/files/arm64/20220215/open_gapps-arm64-11.0-pico-20220215.zip/download -n X.zip</code>
+<code>/mirror1 https://sourceforge.net/projects/opengapps/files/arm64/20220215/open_gapps-arm64-11.0-pico-20220215.zip/download -n X.zip</code>
 
 <b>🚩How to ZIP or Archive Mirror?</b>
-<code>/{cmd}</code> [Your Link] -z 
+<code>/mirror1</code> [Your Link] -z 
 <b>Note : Add -z After Your Link</b>
 <b>Example :</b>
-<code>/{cmd} https://speed.hetzner.de/100MB.bin -z</code>
+<code>/mirror1 https://speed.hetzner.de/100MB.bin -z</code>
 
 <b>🚩How to UNZIP or Extract Mirror ?</b>
-<code>/{cmd}</code> [Your Link] -e
+<code>/mirror1</code> [Your Link] -e
 <b>Note : Add -e After Your Link</b>
 <b>Example :</b>
-<code>/{cmd} https://sourceforge.net/projects/opengapps/files/arm64/20220215/open_gapps-arm64-11.0-pico-20220215.zip/download -e</code>
+<code>/mirror1 https://sourceforge.net/projects/opengapps/files/arm64/20220215/open_gapps-arm64-11.0-pico-20220215.zip/download -e</code>
 
 <b>🚩How to UNZIP or Extract File With Password?</b>
-<code>/{cmd}</code> [Your Link] -e [password]
+<code>/mirror1</code> [Your Link] -e [password]
 <b>Note : Add -e [password] After Your Link</b>
 <b>Example :</b>
-<code>/{cmd} https://www.mediafire.com/file/n41mxmkb7tu9mfz/Wallpaper.zip/file -e xDrive</code>
-"""
+<code>/mirror1 https://www.mediafire.com/file/n41mxmkb7tu9mfz/Wallpaper.zip/file -e xDrive</code>
+_____________________________________
 
-
-QBMIRROR_HELP_MESSAGE = """
-<b>🚩How to UNZIP or Extract File With Password?</b>
-<code>/{cmd}</code> [Your Link] -e [password]
-<b>Note : Add -e [password] After Your Link</b>
+<b>🚩How to Mirror With qBitTorrent?</b>
 <b>Example :</b>
-<code>/{cmd} https://www.mediafire.com/file/n41mxmkb7tu9mfz/Wallpaper.zip/file -e xDrive</code>
+<code>/qbmirror1 https://yts.mx/torrent/download/063A8D1602B018CEF86F34FF540D69D29F46CBBA</code>
+<b>Use Magnet Link :</b>
+<code>/qbmirror1 magnet:?xt=urn:btih:d984f67af9917b214cd8b6048ab5624c7df6a07a&tr=https%3A%2F%2Facademictorrents.com%2Fannounce.php&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce</code>
+
+<b>🚩How to Mirror Seeding & Selection File With qBitTorrent?</b>
+<b>Note : Add -s or -d After [Your Link] or [Magnet Link]</b>
+<b>-s = Selection File</b>
+<b>-d = Seeding File</b>
+<b>Example :</b>
+<b>- For Selection Files<b>
+<code>/qbmirror1 -s https://yts.mx/torrent/download/063A8D1602B018CEF86F34FF540D69D29F46CBBA</code>
+
+<b>- For Seeding Files</b>
+<code>/qbmirror1 -d https://yts.mx/torrent/download/063A8D1602B018CEF86F34FF540D69D29F46CBBA</code>
 """
 
 RSS_HELP_MESSAGE = """
