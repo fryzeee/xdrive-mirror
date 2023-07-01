@@ -96,6 +96,15 @@ MIRROR_HELP_MESSAGE = """
 <code>/{cmd} https://www.mediafire.com/file/n41mxmkb7tu9mfz/Wallpaper.zip/file -e xDrive</code>
 """
 
+
+QBMIRROR_HELP_MESSAGE = """
+<b>🚩How to UNZIP or Extract File With Password?</b>
+<code>/{cmd}</code> [Your Link] -e [password]
+<b>Note : Add -e [password] After Your Link</b>
+<b>Example :</b>
+<code>/{cmd} https://www.mediafire.com/file/n41mxmkb7tu9mfz/Wallpaper.zip/file -e xDrive</code>
+"""
+
 RSS_HELP_MESSAGE = """
 Use this format to add feed url:
 Title1 link (required)
