@@ -100,9 +100,9 @@ class MirrorLeechListener:
         else:
             mode = 'Upload to Google Drive'
         if self.compress:
-            mode += 'Upload as .Zip'
+            mode += ' & Upload as .Zip File'
         elif self.extract:
-            mode += 'Upload as Unzip or Extracted'
+            mode += ' & Upload as Unzip or Extracted'
         self.extra_details['mode'] = mode
 
     def __source(self):
