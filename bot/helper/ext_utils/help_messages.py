@@ -67,32 +67,32 @@ Check all yt-dlp api options from this <a href='https://github.com/yt-dlp/yt-dlp
 
 MIRROR_HELP_MESSAGE = """
 <b>🚩How to Mirror ?</b>
-<code>/{cmd}</code> {Link}
+<code>/{cmd}</code> [Link]
 <b>Example :</b>
 <code>/{cmd} https://sourceforge.net/projects/opengapps/files/arm64/20220215/open_gapps-arm64-11.0-pico-20220215.zip/download</code>
 
 <b>🚩How to Mirror With Custom Name?</b>
-<code>/{cmd}</code> {Link} -n {New Name}
-<b>Note : Add -n After Link</b>
+<code>/{cmd}</code> [Link] -n [New Name]
+<b>Note : Add -n After Your Link</b>
 <b>Example :</b>
 <code>/{cmd} https://sourceforge.net/projects/opengapps/files/arm64/20220215/open_gapps-arm64-11.0-pico-20220215.zip/download -n X.zip</code>
 
 <b>🚩How to ZIP or Archive Mirror?</b>
-<code>/{cmd}</code> {Your Link} -z 
+<code>/{cmd}</code> [Your Link] -z 
 <b>Note : Add -z After Your Link</b>
 <b>Example :</b>
 <code>/{cmd} https://speed.hetzner.de/100MB.bin -z</code>
 
 <b>🚩How to UNZIP or Extract Mirror ?</b>
-<code>/{cmd}</code> {Your Link} -e
+<code>/{cmd}</code> [Your Link] -e
 <b>Note : Add -e After Your Link</b>
-<b>Example : </b>
+<b>Example :</b>
 <code>/{cmd} https://sourceforge.net/projects/opengapps/files/arm64/20220215/open_gapps-arm64-11.0-pico-20220215.zip/download -e</code>
 
 <b>🚩How to UNZIP or Extract File With Password?</b>
-<code>/{cmd}</code> {Your Link} -e {password}
+<code>/{cmd}</code> [Your Link] -e [password]
 <b>Note : Add -e {password} After Your Link</b>
-<b>Example : </b>
+<b>Example :</b>
 <code>/{cmd} https://www.mediafire.com/file/n41mxmkb7tu9mfz/Wallpaper.zip/file -e xDrive</code>
 """
 
