@@ -157,7 +157,7 @@ Note: If -up not specified then rclone destination will be the RCLONE_PATH from 
 """
 
 
-LECH_HELP_MESSAGE = """
+LEECH_HELP_MESSAGE = """
 TEST TEST TEST
 """
 
